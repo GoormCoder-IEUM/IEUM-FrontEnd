@@ -32,6 +32,9 @@ const HeaderBar = () => {
         <li>
           <Link to="/ContryIntroModal">ContryIntroModal</Link>
         </li>
+        <li>
+          <Link to="/DateChooseModal">DateChooseModal</Link>
+        </li>
       </ul>
     </nav>
   );
