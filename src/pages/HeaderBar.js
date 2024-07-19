@@ -29,6 +29,9 @@ const HeaderBar = () => {
         <li>
           <Link to="/finaldata">Finaldata</Link>
         </li>
+        <li>
+          <Link to="/ContryIntroModal">ContryIntroModal</Link>
+        </li>
       </ul>
     </nav>
   );

@@ -1,0 +1,35 @@
+.modal-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+  align-items: stretch;
+  border: 3px black solid;
+  width: 50%;
+}
+
+.left-container,
+.right-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  height: 100%;
+}
+
+.left-container img {
+  max-width: 100%;
+  height: auto;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  gap: 20px;
+}
+
+.button-group button,
+.right-container button {
+  padding: 10px 30px;
+}

@@ -11,6 +11,7 @@ import HeaderBar from "./pages/HeaderBar";
 import SelectDestination from "./pages/SelectDestination";
 import SelectAccommodation from "./pages/SelectAccommodation";
 import FinalData from "./pages/FinalData";
+import ContryIntroModal from "./modal/ContryIntroModal";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/select-destination" element={<SelectDestination />} />
         <Route path="/select-accommodation" element={<SelectAccommodation />} />
         <Route path="/finaldata" element={<FinalData />} />
+        <Route path="/ContryIntroModal" element={<ContryIntroModal />} />
       </Routes>
     </Router>
   );
