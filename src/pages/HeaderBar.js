@@ -38,6 +38,9 @@ const HeaderBar = () => {
         <li>
           <Link to="/PlaceIntroModal">PlaceIntroModal</Link>
         </li>
+        <li>
+          <Link to="/StayIntroModal">StayIntroModal</Link>
+        </li>
       </ul>
     </nav>
   );
