@@ -13,6 +13,7 @@ import SelectAccommodation from "./pages/SelectAccommodation";
 import FinalData from "./pages/FinalData";
 import ContryIntroModal from "./modal/ContryIntroModal";
 import DateChooseModal from "./modal/DateChooseModal";
+import PlaceIntroModal from "./modal/PlaceIntroModal";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/finaldata" element={<FinalData />} />
         <Route path="/ContryIntroModal" element={<ContryIntroModal />} />
         <Route path="/DateChooseModal" element={<DateChooseModal />} />
+        <Route path="/PlaceIntroModal" element={<PlaceIntroModal />} />
       </Routes>
     </Router>
   );
