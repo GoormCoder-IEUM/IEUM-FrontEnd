@@ -11,6 +11,10 @@ import HeaderBar from "./pages/HeaderBar";
 import SelectDestination from "./pages/SelectDestination";
 import SelectAccommodation from "./pages/SelectAccommodation";
 import FinalData from "./pages/FinalData";
+import ContryIntroModal from "./modal/ContryIntroModal";
+import DateChooseModal from "./modal/DateChooseModal";
+import PlaceIntroModal from "./modal/PlaceIntroModal";
+import StayIntroModal from "./modal/StayIntroModal";
 
 function App() {
   return (
@@ -25,6 +29,10 @@ function App() {
         <Route path="/select-destination" element={<SelectDestination />} />
         <Route path="/select-accommodation" element={<SelectAccommodation />} />
         <Route path="/finaldata" element={<FinalData />} />
+        <Route path="/ContryIntroModal" element={<ContryIntroModal />} />
+        <Route path="/DateChooseModal" element={<DateChooseModal />} />
+        <Route path="/PlaceIntroModal" element={<PlaceIntroModal />} />
+        <Route path="/StayIntroModal" element={<StayIntroModal />} />
       </Routes>
     </Router>
   );

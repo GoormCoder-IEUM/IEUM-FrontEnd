@@ -1,0 +1,31 @@
+.modal-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  border: 3px solid black;
+  width: 50%;
+  margin: auto;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.place-name,
+.place-english-name,
+.place-description,
+.place-address,
+.place-hours {
+  margin: 10px 0;
+  text-align: center;
+}
+
+.place-image {
+  max-width: 100%;
+  height: auto;
+  border: 2px solid #ccc;
+}

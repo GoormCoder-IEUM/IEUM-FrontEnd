@@ -1,0 +1,34 @@
+.modal-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  align-items: stretch;
+  border: 3px black solid;
+  width: 50%;
+}
+
+.modal-container h3 {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.modal-container p {
+  font-size: 0.9em;
+  margin-bottom: 20px;
+  color: #666;
+}
+
+.date-picker-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Adjust this value for spacing between date pickers */
+}
+
+.date-picker-container .react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker {
+  font-size: 0.8em;
+}

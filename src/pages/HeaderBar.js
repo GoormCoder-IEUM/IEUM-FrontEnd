@@ -29,6 +29,18 @@ const HeaderBar = () => {
         <li>
           <Link to="/finaldata">Finaldata</Link>
         </li>
+        <li>
+          <Link to="/ContryIntroModal">ContryIntroModal</Link>
+        </li>
+        <li>
+          <Link to="/DateChooseModal">DateChooseModal</Link>
+        </li>
+        <li>
+          <Link to="/PlaceIntroModal">PlaceIntroModal</Link>
+        </li>
+        <li>
+          <Link to="/StayIntroModal">StayIntroModal</Link>
+        </li>
       </ul>
     </nav>
   );
