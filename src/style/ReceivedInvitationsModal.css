@@ -1,48 +1,74 @@
-.modal-overlay {
+.receivedinvitationsmodal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
 }
 
-.modal-content {
+.receivedinvitationsmodal-content {
   background: white;
   padding: 20px;
-  border-radius: 5px;
+  border-radius: 10px;
   width: 80%;
-  max-width: 500px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  position: relative;
 }
 
-.invitation-list {
-  max-height: 300px;
-  overflow-y: auto;
-  margin-bottom: 20px;
-}
-
-.invitation-item {
-  border-bottom: 1px solid #ccc;
-  padding: 10px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.button {
-  display: inline-block;
-  padding: 10px 20px;
-  background: #007bff;
-  color: white;
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
   border: none;
-  border-radius: 5px;
+  font-size: 24px;
   cursor: pointer;
 }
 
-.button:hover {
-  background: #0056b3;
+.invitation-table-container {
+  margin-top: 20px;
+}
+
+.invitation-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.invitation-table th,
+.invitation-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.invitation-table th {
+  background-color: #f2f2f2;
+}
+
+.invitation-item button {
+  margin: 0 5px;
+}
+
+.invitation-item button {
+  padding: 10px 15px;
+  margin-right: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.invitation-item .refuse-btn  {
+  padding: 10px 15px;
+  margin-right: 10px;
+  background-color: #ff0000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }

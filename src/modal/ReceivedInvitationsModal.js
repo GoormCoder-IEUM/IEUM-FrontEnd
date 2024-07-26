@@ -7,20 +7,33 @@ const ReceivedInvitationsModal = ({ isOpen, onClose, invitations, onAccept }) =>
   }
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
+    <div className="receivedinvitationsmodal-overlay">
+      <div className="receivedinvitationsmodal-content">
         <button className="close-button" onClick={onClose}>&times;</button>
         <h2>받은 초대 조회</h2>
-        <div className="invitation-list">
+        <div className="invitation-table-container">
           {invitations.length > 0 ? (
-            invitations.map((invitation, index) => (
-              <div key={index} className="invitation-item">
-                <p>일정 제목: {invitation.planName}</p>
-                <p>여행지: {invitation.destinationName}</p>
-                <button onClick={() => onAccept(invitation.planId, 'ACCEPT')}>수락</button>
-                <button onClick={() => onAccept(invitation.planId, 'REFUSE')}>거절</button>
-              </div>
-            ))
+            <table className="invitation-table">
+              <thead>
+                <tr>
+                  <th>일정 제목</th>
+                  <th>여행지</th>
+                  <th>수락 여부</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invitations.map((invitation, index) => (
+                  <tr key={index} className="invitation-item">
+                    <td>{invitation.planName}</td>
+                    <td>{invitation.destinationName}</td>
+                    <td>
+                      <button onClick={() => onAccept(invitation.planId, 'ACCEPT')}>수락</button>
+                      <button className="refuse-btn" onClick={() => onAccept(invitation.planId, 'REFUSE')}>거절</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           ) : (
             <p>받은 초대가 없습니다.</p>
           )}
