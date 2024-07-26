@@ -36,7 +36,7 @@
     box-sizing: border-box;
   }
   
-  button {
+  .button {
     padding: 10px 15px;
     margin-right: 10px;
     background-color: #007bff;
@@ -46,7 +46,7 @@
     cursor: pointer;
   }
   
-  button[type="button"] {
+  .button[type="button"] {
     background-color: #6c757d;
   }
   
