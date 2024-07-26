@@ -5,14 +5,16 @@ import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
 import "../style/MyPage.css";
 import UserEditModal from "../modal/UserEditModal";
-import PasswordChangeModal from "../modal/PasswordChangeModal"; // 비밀번호 변경 모달 import
+import PasswordChangeModal from "../modal/PasswordChangeModal";
+import ReceivedInvitationsModal from "../modal/ReceivedInvitationsModal";
 
 const MyPage = () => {
   const [activeTab, setActiveTab] = useState("일정");
   const [events, setEvents] = useState([]);
   const [memberInfo, setMemberInfo] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false); // 비밀번호 변경 모달 상태
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [isInvitationsModalOpen, setIsInvitationsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     gender: "",
@@ -21,7 +23,8 @@ const MyPage = () => {
   const [passwordData, setPasswordData] = useState({
     previousPassword: "",
     newPassword: "",
-  }); // 비밀번호 변경 데이터
+  });
+  const [invitations, setInvitations] = useState([]);
 
   useEffect(() => {
     const fetchMemberInfo = async () => {
@@ -81,6 +84,54 @@ const MyPage = () => {
     setIsPasswordModalOpen(false);
   };
 
+  const openInvitationsModal = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`http://localhost:8080/plan/members/invite`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setInvitations(response.data);
+      console.log("받은초대: ", response.data);
+      setIsInvitationsModalOpen(true);
+    } catch (error) {
+      console.error("Error fetching invitations:", error);
+    }
+  };
+
+  const closeInvitationsModal = () => {
+    setIsInvitationsModalOpen(false);
+  };
+
+  const handleAccept = async (planId, acceptance) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.patch(
+        `http://localhost:8080/plan/members/invite/${planId}/${acceptance}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (acceptance === 'ACCEPT') {
+        alert("초대를 수락했습니다.")
+      }
+      else {
+        alert("초대를 거절했습니다.")
+      }
+      setInvitations((prevInvitations) =>
+        prevInvitations.filter((invitation) => invitation.planId !== planId)
+      );
+      console.log(response.data);
+      // Update invitations list or any other state if needed
+    } catch (error) {
+      console.error("Error sending acceptance:", error);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
@@ -124,7 +175,7 @@ const MyPage = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      console.log("비밀번호 변경 토큰:" ,token);
+      console.log("비밀번호 변경 토큰:", token);
       const response = await axios.post(
         `http://localhost:8080/my-page/password`,
         passwordData,
@@ -158,6 +209,7 @@ const MyPage = () => {
           <div>Loading...</div>
         )}
         <div className="profile-item" onClick={openEditModal}>회원 정보 수정</div>
+        <div className="profile-item" onClick={openInvitationsModal}>받은 초대 조회</div>
         <div className="profile-item" onClick={openPasswordModal}>비밀번호 재설정</div>
         <div className="profile-item">회원탈퇴</div>
       </div>
@@ -182,7 +234,7 @@ const MyPage = () => {
               <div className="placeholder">일정 리스트</div>
             </div>
           ) : (
-            <div className="calendar">
+            <div className="mypage-calendar">
               <FullCalendar
                 plugins={[dayGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
@@ -208,6 +260,13 @@ const MyPage = () => {
         onSubmit={handlePasswordSubmit}
         formData={passwordData}
         handleInputChange={handlePasswordChange}
+      />
+
+      <ReceivedInvitationsModal
+        isOpen={isInvitationsModalOpen}
+        onClose={closeInvitationsModal}
+        invitations={invitations}
+        onAccept={handleAccept}
       />
     </div>
   );
