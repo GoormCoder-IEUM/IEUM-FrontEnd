@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../style/Login.css";
 
@@ -6,6 +7,8 @@ const Login = () => {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,6 +33,8 @@ const Login = () => {
       console.error("Error during login:", error);
       setError("Login failed. Please check your credentials and try again.");
     }
+
+    navigate('/');
   };
 
   return (

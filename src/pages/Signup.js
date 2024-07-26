@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../style/Signup.css";
 
@@ -10,6 +11,8 @@ const Signup = () => {
   const [gender, setGender] = useState("");
   const [error, setError] = useState(null);
 
+  const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -18,9 +21,8 @@ const Signup = () => {
       loginId: username,
       name,
       password,
-      // birth: birthdate, 수정 필요함
-      birth: "2024-07-23T01:13:01.307Z",
-      gender,
+      birth: birthdate,
+      gender
     };
 
     try {
@@ -41,6 +43,9 @@ const Signup = () => {
       setError("Signup failed. Please check your details and try again.");
       console.log("회원정보: ", userData);
     }
+
+
+    navigate('/login');
   };
 
   return (
@@ -96,8 +101,8 @@ const Signup = () => {
             required
           >
             <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
           </select>
         </div>
         {error && <div className="error-message">{error}</div>}
