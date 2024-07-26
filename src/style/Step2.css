@@ -1,0 +1,47 @@
+.step2-container {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+.place-container {
+    width: 100%;
+    padding: 20px;
+    border-right: 1px solid #ccc;
+    height: 100%;
+}
+
+.places-list {
+    margin-top: 20px;
+}
+
+.place-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.place-item h3 {
+    margin: 0;
+}
+
+.place-item p {
+    margin: 5px 0;
+}
+
+.selected-places {
+    width: 70%;
+    padding: 20px;
+}
+
+.selected-place-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+}
+
+.selected-place-item h3 {
+    margin: 0;
+}
+
+.selected-place-item p {
+    margin: 5px 0;
+}
