@@ -9,6 +9,7 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, id, setPlanId }) => 
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [vehicle, setVehicle] = useState("PUBLIC_TRANSPORTATION");
 
   if (!show) {
     return null;
@@ -69,7 +70,7 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, id, setPlanId }) => 
         destinationId: id,
         startedAt: new Date(startDate).toISOString(),
         endedAt: new Date(endDate).toISOString(),
-        vehicle: "PUBLIC_TRANSPORTATION",
+        vehicle: vehicle,
       };
       console.log("요청 :", data);
 
@@ -83,7 +84,6 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, id, setPlanId }) => 
 
         setPlanId(planId); // Set planId in parent component
         onClose();
-
       } catch (error) {
         console.error("There was an error making the request!", error);
       }
@@ -123,6 +123,28 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, id, setPlanId }) => 
 
         <div className="selected-date">
           선택한 날짜 : {startDate && endDate ? `${formatDate(startDate)} ~ ${formatDate(endDate)}` : "날짜를 선택해주세요."}
+        </div>
+
+        <div className="vehicle-select">
+          <p>이동 수단 선택:</p>
+          <label>
+            <input
+              type="radio"
+              value="PUBLIC_TRANSPORTATION"
+              checked={vehicle === "PUBLIC_TRANSPORTATION"}
+              onChange={(e) => setVehicle(e.target.value)}
+            />
+            대중교통 이용
+          </label>
+          <label>
+            <input
+              type="radio"
+              value="OWN_CAR"
+              checked={vehicle === "OWN_CAR"}
+              onChange={(e) => setVehicle(e.target.value)}
+            />
+            자가용
+          </label>
         </div>
 
         <button onClick={handleReset}>다시 선택</button>
