@@ -5,7 +5,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
 import "../style/DateChooseModal.css";
 
-const DateChooseModal = ({ show, onClose, setSelectedDates, id }) => {
+const DateChooseModal = ({ show, onClose, setSelectedDates, id, setPlanId }) => {
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -22,9 +22,9 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, id }) => {
         {
           start,
           end: new Date(start).setDate(start.getDate() + 1),
-          display: 'background',
-          backgroundColor: '#ff9f89'
-        }
+          display: "background",
+          backgroundColor: "#ff9f89",
+        },
       ]);
     } else if (!endDate) {
       const adjustedEnd = new Date(end);
@@ -38,9 +38,9 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, id }) => {
         {
           start: startDate,
           end: adjustedEnd,
-          display: 'background',
-          backgroundColor: '#ff9f89'
-        }
+          display: "background",
+          backgroundColor: "#ff9f89",
+        },
       ]);
 
       setSelectedDates(`${formattedStartDate} ~ ${formattedEndDate}`);
@@ -50,8 +50,8 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, id }) => {
   const formatDate = (date) => {
     const d = new Date(date);
     const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
   };
@@ -69,18 +69,21 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, id }) => {
         destinationId: id,
         startedAt: new Date(startDate).toISOString(),
         endedAt: new Date(endDate).toISOString(),
-        vehicle: "PUBLIC_TRANSPORTATION"
+        vehicle: "PUBLIC_TRANSPORTATION",
       };
       console.log("요청 :", data);
 
       try {
-        const response = await axios.post('http://localhost:8080/plans', data, {
+        const response = await axios.post("http://localhost:8080/plans", data, {
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
-        console.log(response.data);
+        const planId = response.data.planId;
+
+        setPlanId(planId); // Set planId in parent component
         onClose();
+
       } catch (error) {
         console.error("There was an error making the request!", error);
       }
