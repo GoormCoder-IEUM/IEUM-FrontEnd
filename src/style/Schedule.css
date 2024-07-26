@@ -6,6 +6,7 @@
 .sidebar-container {
     height: 100%;
     width: 5%;
+    min-width: 100px;
 }
 
 .sidebar {
