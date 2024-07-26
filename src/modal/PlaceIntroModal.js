@@ -12,20 +12,20 @@ const PlaceIntroModal = ({ isOpen, onClose, enName, krName, content, id, modalRe
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content" ref={modalRef}>
-        <button className="modal-close-button" onClick={onClose}>
+    <div className="placeintromodal-overlay">
+      <div className="placeintromodal-content" ref={modalRef}>
+        <button className="placeintromodal-close-button" onClick={onClose}>
           &times;
         </button>
-        <div className="modal-body">
-          <div className="modal-body-content">
+        <div className="placeintromodal-body">
+          <div className="placeintromodal-body-content">
             <div className="content-title-eng"><strong>{enName}</strong></div>
             <div className="content-title-kor">{krName}</div>
             <div className="content-detail">{content}</div>
           </div>
           <img src="assets/intro_sample.jpg" alt="Jeju" />
         </div>
-        <button className="modal-action-button" onClick={handleLearnMoreClick}>알아보기</button>
+        <button className="placeintromodal-action-button" onClick={handleLearnMoreClick}>알아보기</button>
       </div>
     </div>
   );
