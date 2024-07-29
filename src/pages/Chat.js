@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const ChatContainer = styled.div`
-  width: 550px;
+  width: 450px;
   height: 650px;
   border: 1px solid #ddd;
   border-radius: 10px;
