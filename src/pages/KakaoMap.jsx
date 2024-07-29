@@ -69,18 +69,8 @@ const KakaoMap = () => {
 
   return (
     <div style={{ display: 'flex' }}>
-      <div style={{ flex: 1 }}>
-        <h2>장소 선택</h2>
-        <div>
-          {places.map((place) => (
-            <div key={place.id}>
-              <button onClick={() => handleSelectPlace(place)}>{place.placeName}</button>
-            </div>
-          ))}
-        </div>
-      </div>
       <div style={{ flex: 2 }}>
-        <div id="map" style={{ width: '500px', height: '500px', border: '1px solid black' }}></div>
+        <div id="map" style={{ width: '500px', height: '650px', border: '1px solid black' }}></div>
       </div>
     </div>
   );

@@ -16,6 +16,7 @@ import DateChooseModal from "./modal/DateChooseModal";
 import PlaceIntroModal from "./modal/PlaceIntroModal";
 import StayIntroModal from "./modal/StayIntroModal";
 import KakaoMap from "./pages/KakaoMap";
+import Chat from "./pages/Chat";
 
 
 function App() {
@@ -24,6 +25,8 @@ function App() {
       <HeaderBar />
       <Routes>
         <Route path="/" element={<MainPage />} />
+        <Route path="/chat" element={<Chat/>}/>
+        <Route path="/map" element={<KakaoMap/>}/>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/mypage" element={<MyPage />} />
