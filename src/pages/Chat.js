@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 const ChatContainer = styled.div`
@@ -9,6 +9,21 @@ const ChatContainer = styled.div`
   overflow: hidden;
   display: flex;
   flex-direction: column;
+`;
+
+const Header = styled.div`
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  font-size: 0.8em;
+  font-weight: bold;
+`;
+
+const Participants = styled.div`
+  font-size: 0.7em;
+  color: #555;
+  margin-top: 5px;
 `;
 
 const MessageContainer = styled.div`
@@ -48,7 +63,7 @@ const ProfileImage = styled.img`
 `;
 
 const ProfileName = styled.div`
-  font-size: 0.8em;
+  font-size: 0.7em;
   color: #555;
   margin-left: ${(props) => (props.isMine ? '10px' : '0')};
   margin-right: ${(props) => (props.isMine ? '0' : '10px')};
@@ -93,6 +108,7 @@ const messagesData = [
 const Chat = () => {
   const [messages, setMessages] = useState(messagesData);
   const [input, setInput] = useState('');
+  const messageEndRef = useRef(null);
 
   const handleInputChange = (e) => setInput(e.target.value);
 
@@ -109,19 +125,31 @@ const Chat = () => {
     }
   };
 
+  useEffect(() => {
+    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const uniqueParticipants = [...new Set(messages.map(msg => msg.name))];
+  const participantNames = uniqueParticipants.join(', ');
+
   return (
     <ChatContainer>
+      <Header>
+        그룹 채팅 (참여자: {uniqueParticipants.length}명)
+        <Participants>{participantNames}</Participants>
+      </Header>
       <MessageContainer>
         {messages.map((msg) => (
           <Message key={msg.id} isMine={msg.isMine}>
             <ProfileContainer isMine={msg.isMine}>
-              {!msg.isMine && <ProfileImage src={`/images/${msg.profile}`} alt={msg.name} />}
+              
               <ProfileName isMine={msg.isMine}>{msg.name}</ProfileName>
-              {msg.isMine && <ProfileImage src={`/images/${msg.profile}`} alt={msg.name} />}
+    
             </ProfileContainer>
             <MessageContent isMine={msg.isMine}>{msg.text}</MessageContent>
           </Message>
         ))}
+        <div ref={messageEndRef} />
       </MessageContainer>
       <InputContainer>
         <Input 
