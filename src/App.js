@@ -15,6 +15,7 @@ import ContryIntroModal from "./modal/ContryIntroModal";
 import DateChooseModal from "./modal/DateChooseModal";
 import PlaceIntroModal from "./modal/PlaceIntroModal";
 import StayIntroModal from "./modal/StayIntroModal";
+import KakaoMap from "./pages/KakaoMap";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
         <Route path="/PlaceIntroModal" element={<PlaceIntroModal />} />
         <Route path="/StayIntroModal" element={<StayIntroModal />} />
       </Routes>
+      <KakaoMap/>
     </Router>
   );
 }
