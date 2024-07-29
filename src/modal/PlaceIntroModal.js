@@ -1,17 +1,31 @@
 import React from "react";
-import pic from "../img/images.jpg";
+import { useNavigate } from "react-router-dom";
 import "../style/PlaceIntroModal.css";
 
-const PlaceIntroModal = () => {
+const PlaceIntroModal = ({ isOpen, onClose, enName, krName, content, id, modalRef }) => {
+  const navigate = useNavigate();
+
+  const handleLearnMoreClick = () => {
+    navigate("/schedule", { state: { id, krName } });
+  };
+
+  if (!isOpen) return null;
+
   return (
-    <div className="modal-container">
-      <div className="modal-content">
-        <p className="place-name">장소이름</p>
-        <p className="place-english-name">장소영문이름</p>
-        <img src={pic} alt="Jeju" className="place-image" />
-        <p className="place-description">장소에 대한 설명</p>
-        <p className="place-address">주소 : 주소상세 쓰기</p>
-        <p className="place-hours">영업 시간 : 8:00 ~ 17:00</p>
+    <div className="placeintromodal-overlay">
+      <div className="placeintromodal-content" ref={modalRef}>
+        <button className="placeintromodal-close-button" onClick={onClose}>
+          &times;
+        </button>
+        <div className="placeintromodal-body">
+          <div className="placeintromodal-body-content">
+            <div className="content-title-eng"><strong>{enName}</strong></div>
+            <div className="content-title-kor">{krName}</div>
+            <div className="content-detail">{content}</div>
+          </div>
+          <img src="assets/intro_sample.jpg" alt="Jeju" />
+        </div>
+        <button className="placeintromodal-action-button" onClick={handleLearnMoreClick}>알아보기</button>
       </div>
     </div>
   );

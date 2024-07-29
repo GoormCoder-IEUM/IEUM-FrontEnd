@@ -1,0 +1,8 @@
+nav ul {
+    display: flex;
+    padding: 0;
+}
+
+nav ul li {
+    margin: auto; 
+}
