@@ -32,7 +32,7 @@ function App() {
         <Route path="/select-accommodation" element={<SelectAccommodation />} />
         <Route path="/finaldata" element={<FinalData />} />
       </Routes>
-      <KakaoMap/>
+    
     </Router>
   );
 }
