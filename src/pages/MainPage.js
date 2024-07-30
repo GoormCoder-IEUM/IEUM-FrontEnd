@@ -126,7 +126,7 @@ const MainPage = () => {
         krName={modalContent.krName}
         enName={modalContent.enName}
         content={modalContent.description}
-        id={modalContent.id}
+        destinationId={modalContent.id}
         modalRef={modalRef}
       />
     </div>

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import axios from 'axios';
 import "../style/SetPlace.css";
 
-const SetPlace = ({ selectedDates, krName }) => {
+const SetPlace = ({ selectedDates, krName, planId }) => {
   const [places, setPlaces] = useState([]);
   const [selectedPlaces, setSelectedPlaces] = useState([]);
 
@@ -10,21 +11,19 @@ const SetPlace = ({ selectedDates, krName }) => {
       const token = localStorage.getItem("token");
 
       try {
-        const response = await fetch("http://localhost:8080/api/places", {
-          headers: {
-            "Authorization": `Bearer ${token}`,
-          },
-        });
-        console.log("places: ", response);
-        
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        
-        const data = await response.json();
-        setPlaces(data);
+        const response = await axios.get(
+          `http://localhost:8080/plans/${planId}/places`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+          });
+        setPlaces(response.data);
+
         console.log("places: ", places);
-      } catch (error) {
+      }
+      
+      catch (error) {
         console.error("There has been a problem with your fetch operation:", error);
       }
     };
@@ -32,8 +31,28 @@ const SetPlace = ({ selectedDates, krName }) => {
     fetchPlaces();
   }, []);
 
-  const handlePlaceClick = (place) => {
-    setSelectedPlaces((prev) => [...prev, place]);
+  const handleAddPlaceClick = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await axios.post(
+        `http://localhost:8080/plans/${planId}/places`,
+        {
+          placeName: "string",
+          address: "string",
+          categoryId: 1 // 수정 필요 수정 필요 수정 필요 수정 필요 수정 필요 
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Invite response:", response.data);
+    } catch (error) {
+      console.error("Error inviting member:", error);
+    }
   };
 
   const handleRemovePlace = (placeId) => {
@@ -45,16 +64,17 @@ const SetPlace = ({ selectedDates, krName }) => {
       <div className="place-container">
         <h2>여행 지역 : {krName} </h2>
         {selectedDates && <p>선택된 날짜: {selectedDates}</p>}
+
         <div className="places-list">
           {places.map((place) => (
-            <div key={place.id} className="place-item">
-              <h3>{place.name}</h3>
-              <p>{place.type}</p>
-              <p>{place.location}</p>
-              <button onClick={() => handlePlaceClick(place)}>추가</button>
+            <div key={place.placeName} className="place-item">
+              <h3>{place.placeName}</h3>
+              <p>{place.address}</p>
             </div>
           ))}
         </div>
+
+        <button onClick={() => handleAddPlaceClick()}>추가</button>
       </div>
       <div className="selected-places">
         <h2>Selected Places</h2>

@@ -12,9 +12,9 @@ const Schedule = () => {
   const [showDateChooseModal, setShowDateChooseModal] = useState(true);
   const [showInviteMemberModal, setShowInviteMemberModal] = useState(false);
   const [selectedDates, setSelectedDates] = useState("");
-  const [planId, setPlanId] = useState(null); // Add planId state
+  const [planId, setPlanId] = useState(null);
   const location = useLocation();
-  const { id, krName } = location.state || {}; 
+  const { destinationId, krName } = location.state || {}; 
 
   useEffect(() => {
     console.log("Location State:", location.state); // Add this line
@@ -38,7 +38,7 @@ const Schedule = () => {
       case "STEP 1":
         return <SetDate selectedDates={selectedDates} krName={krName} />;
       case "STEP 2":
-        return <SetPlace selectedDates={selectedDates} krName={krName} id={id} />;
+        return <SetPlace selectedDates={selectedDates} krName={krName} destinationId={destinationId} planId={planId} />;
       case "STEP 3":
         return <SetAccommodation selectedDates={selectedDates} />;
       default:
@@ -52,7 +52,7 @@ const Schedule = () => {
         show={showDateChooseModal} 
         onClose={closeDateChooseModal} 
         setSelectedDates={setSelectedDates} 
-        id={id} 
+        destinationId={destinationId} 
         setPlanId={setPlanId} // Pass setPlanId to DateChooseModal
       />
       <InviteMemberModal 

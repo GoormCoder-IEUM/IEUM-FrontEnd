@@ -2,11 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "../style/PlaceIntroModal.css";
 
-const PlaceIntroModal = ({ isOpen, onClose, enName, krName, content, id, modalRef }) => {
+const PlaceIntroModal = ({ isOpen, onClose, enName, krName, content, destinationId, modalRef }) => {
   const navigate = useNavigate();
 
   const handleLearnMoreClick = () => {
-    navigate("/schedule", { state: { id, krName } });
+    navigate("/schedule", { state: { destinationId, krName } });
   };
 
   if (!isOpen) return null;
