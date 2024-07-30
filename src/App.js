@@ -11,11 +11,6 @@ import HeaderBar from "./pages/HeaderBar";
 import SelectDestination from "./pages/SelectDestination";
 import SelectAccommodation from "./pages/SelectAccommodation";
 import FinalData from "./pages/FinalData";
-import ContryIntroModal from "./modal/ContryIntroModal";
-import DateChooseModal from "./modal/DateChooseModal";
-import PlaceIntroModal from "./modal/PlaceIntroModal";
-import StayIntroModal from "./modal/StayIntroModal";
-import KakaoMap from "./pages/KakaoMap";
 
 
 function App() {
@@ -32,7 +27,6 @@ function App() {
         <Route path="/select-accommodation" element={<SelectAccommodation />} />
         <Route path="/finaldata" element={<FinalData />} />
       </Routes>
-      <KakaoMap/>
     </Router>
   );
 }
