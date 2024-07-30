@@ -7,22 +7,12 @@ const Login = () => {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const [kakaoCode, setKakaoCode] = useState(null);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if(kakaoCode === null) {
-    const code = new URL(window.location.href).searchParams.get("code");
-    setKakaoCode(code);
-  }
-    console.log("code : ", kakaoCode);
-  }, [kakaoCode]);
-
   // 카카오 로그인
-
-  const Rest_api_key = 'e6bf5c66c87be4af975d5146e5059b8b' //REST API KEY
-  const redirect_uri = 'http://localhost:3000/login' //Redirect URI
+  const Rest_api_key = '57d8ed74ba0df4a9a24520ab381936d7' //REST API KEY
+  const redirect_uri = 'http://localhost:3000/kakaologin' //Redirect URI
   // oauth 요청 URL
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${Rest_api_key}&redirect_uri=${redirect_uri}&response_type=code`
   
