@@ -76,7 +76,7 @@ const Login = () => {
         <button type="submit">Login</button>
       </form>
 
-      <button onClick={handleKakaoLogin}>카카오 로그인</button>
+      <button className="kakao-btn" onClick={handleKakaoLogin}></button>
 
     </div>
   );
