@@ -5,6 +5,10 @@ import "../style/SetPlace.css";
 const SetPlace = ({ selectedDates, krName, planId }) => {
   const [places, setPlaces] = useState([]);
   const [selectedPlaces, setSelectedPlaces] = useState([]);
+  const [placeName, setPlaceName] = useState('');
+  const [address, setAddress] = useState('');
+  const [categoryId, setCategoryId] = useState(1);
+  const [hasFetchedPlaces, setHasFetchedPlaces] = useState(false);
 
   useEffect(() => {
     const fetchPlaces = async () => {
@@ -19,17 +23,18 @@ const SetPlace = ({ selectedDates, krName, planId }) => {
             },
           });
         setPlaces(response.data);
+        setHasFetchedPlaces(true);
 
-        console.log("places: ", places);
-      }
-      
-      catch (error) {
+        console.log("places: ", response.data);
+      } catch (error) {
         console.error("There has been a problem with your fetch operation:", error);
       }
     };
 
-    fetchPlaces();
-  }, []);
+    if (!hasFetchedPlaces) {
+      fetchPlaces();
+    }
+  }, [hasFetchedPlaces, planId]);
 
   const handleAddPlaceClick = async () => {
     const token = localStorage.getItem("token");
@@ -38,9 +43,9 @@ const SetPlace = ({ selectedDates, krName, planId }) => {
       const response = await axios.post(
         `http://localhost:8080/plans/${planId}/places`,
         {
-          placeName: "string",
-          address: "string",
-          categoryId: 1 // 수정 필요 수정 필요 수정 필요 수정 필요 수정 필요 
+          placeName,
+          address,
+          categoryId,
         },
         {
           headers: {
@@ -49,9 +54,10 @@ const SetPlace = ({ selectedDates, krName, planId }) => {
         }
       );
 
-      console.log("Invite response:", response.data);
+      console.log("Add place response:", response.data);
+      setHasFetchedPlaces(false);
     } catch (error) {
-      console.error("Error inviting member:", error);
+      console.error("Error adding place:", error);
     }
   };
 
@@ -67,14 +73,36 @@ const SetPlace = ({ selectedDates, krName, planId }) => {
 
         <div className="places-list">
           {places.map((place) => (
-            <div key={place.placeName} className="place-item">
+            <div key={place.id} className="place-item">
               <h3>{place.placeName}</h3>
               <p>{place.address}</p>
             </div>
           ))}
         </div>
 
-        <button onClick={() => handleAddPlaceClick()}>추가</button>
+        <div className="add-place-form">
+          <input
+            type="text"
+            placeholder="Place Name"
+            value={placeName}
+            onChange={(e) => setPlaceName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(Number(e.target.value))}
+          >
+            <option value={1}>명소</option>
+            <option value={2}>식당/카페</option>
+            <option value={3}>숙소</option>
+          </select>
+          <button onClick={handleAddPlaceClick}>추가</button>
+        </div>
       </div>
       <div className="selected-places">
         <h2>Selected Places</h2>
