@@ -11,6 +11,7 @@ import ReceivedInvitationsModal from "../modal/ReceivedInvitationsModal";
 const MyPage = () => {
   const [activeTab, setActiveTab] = useState("일정");
   const [events, setEvents] = useState([]);
+  const [schedules, setSchedules] = useState([]);
   const [memberInfo, setMemberInfo] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -42,7 +43,29 @@ const MyPage = () => {
       }
     };
 
+    const fetchSchedules = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(`http://localhost:8080/plans/all`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        console.log("전체 일정 조회 :", response);
+        const formattedEvents = response.data.map((schedule) => ({
+          title: schedule.destinationName,
+          start: schedule.startedAt,
+          end: schedule.endedAt,
+        }));
+        setSchedules(response.data);
+        setEvents(formattedEvents);
+      } catch (error) {
+        console.error("Error fetching schedules:", error);
+      }
+    };
+
     fetchMemberInfo();
+    fetchSchedules();
   }, []);
 
   const handleDateClick = (arg) => {
@@ -231,7 +254,18 @@ const MyPage = () => {
         <div className="content">
           {activeTab === "일정" ? (
             <div className="schedule">
-              <div className="placeholder">일정 리스트</div>
+              {schedules.length > 0 ? (
+                schedules.map((schedule) => (
+                  <div key={schedule.id} className="schedule-item">
+                    <div>목적지: {schedule.destinationName}</div>
+                    <div>시작일: {new Date(schedule.startedAt).toLocaleDateString()}</div>
+                    <div>종료일: {new Date(schedule.endedAt).toLocaleDateString()}</div>
+                    <div>교통수단: {schedule.vehicle}</div>
+                  </div>
+                ))
+              ) : (
+                <div className="placeholder">일정이 없습니다.</div>
+              )}
             </div>
           ) : (
             <div className="mypage-calendar">
@@ -240,6 +274,7 @@ const MyPage = () => {
                 initialView="dayGridMonth"
                 events={events}
                 dateClick={handleDateClick}
+                height="100%"
               />
             </div>
           )}
