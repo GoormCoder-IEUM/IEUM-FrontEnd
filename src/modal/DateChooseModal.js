@@ -5,7 +5,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import axios from "axios";
 import "../style/DateChooseModal.css";
 
-const DateChooseModal = ({ show, onClose, setSelectedDates, id, setPlanId }) => {
+const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPlanId }) => {
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -67,12 +67,11 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, id, setPlanId }) => 
     if (startDate && endDate) {
       const token = localStorage.getItem("token");
       const data = {
-        destinationId: id,
+        destinationId: destinationId,
         startedAt: new Date(startDate).toISOString(),
         endedAt: new Date(endDate).toISOString(),
         vehicle: vehicle,
       };
-      console.log("요청 :", data);
 
       try {
         const response = await axios.post("http://localhost:8080/plans", data, {
@@ -81,6 +80,7 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, id, setPlanId }) => 
           },
         });
         const planId = response.data.planId;
+        console.log("일정 생성 응답 :", response);
 
         setPlanId(planId); // Set planId in parent component
         onClose();
@@ -122,7 +122,7 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, id, setPlanId }) => 
         </div>
 
         <div className="selected-date">
-          선택한 날짜 : {startDate && endDate ? `${formatDate(startDate)} ~ ${formatDate(endDate)}` : "날짜를 선택해주세요."}
+          선택한 날짜 : <strong>{startDate && endDate ? `${formatDate(startDate)} ~ ${formatDate(endDate)}` : "날짜를 선택해주세요."}</strong>
         </div>
 
         <div className="vehicle-select">
