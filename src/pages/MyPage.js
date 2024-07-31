@@ -7,6 +7,7 @@ import "../style/MyPage.css";
 import UserEditModal from "../modal/UserEditModal";
 import PasswordChangeModal from "../modal/PasswordChangeModal";
 import ReceivedInvitationsModal from "../modal/ReceivedInvitationsModal";
+import { useNavigate } from "react-router-dom";
 
 const MyPage = () => {
   const [activeTab, setActiveTab] = useState("일정");
@@ -26,6 +27,8 @@ const MyPage = () => {
     newPassword: "",
   });
   const [invitations, setInvitations] = useState([]);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchMemberInfo = async () => {
@@ -216,6 +219,12 @@ const MyPage = () => {
     }
   };
 
+  const handleEditPlan = (schedule) => {
+    const planIdForState = schedule.id
+    console.log("마이페이지 planId : ", planIdForState);
+    navigate('/schedule', { state: { planIdForState } });
+  }
+
   return (
     <div className="mypage-container">
       <div className="profile-section">
@@ -261,6 +270,7 @@ const MyPage = () => {
                     <div>시작일: {new Date(schedule.startedAt).toLocaleDateString()}</div>
                     <div>종료일: {new Date(schedule.endedAt).toLocaleDateString()}</div>
                     <div>교통수단: {schedule.vehicle}</div>
+                    <button onClick={() => handleEditPlan(schedule)}>일정 확인</button>
                   </div>
                 ))
               ) : (
