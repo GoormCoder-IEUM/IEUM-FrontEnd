@@ -5,8 +5,9 @@
 }
 
 .place-container {
-    width: 100%;
-    padding: 20px;
+    width: 350px;
+    padding: 0 20px;
+    box-sizing: border-box;
     border-right: 1px solid #ccc;
     height: 100%;
 }
@@ -29,8 +30,7 @@
 }
 
 .selected-places {
-    width: 70%;
-    padding: 20px;
+    min-width: 250px;
 }
 
 .selected-place-item {
