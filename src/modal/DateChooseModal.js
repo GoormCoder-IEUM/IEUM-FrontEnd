@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import axios from "axios";
+import { axiosInstance } from "../axiosinstance/Axiosinstance";
 import "../style/DateChooseModal.css";
 
 const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPlanId, formatDate }) => {
@@ -57,7 +57,6 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPl
     const handleSelectClick = async () => {
         if (startDate && endDate) {
             const token = localStorage.getItem("token");
-            const refreshToken = localStorage.getItem("refreshToken");
 
             const data = {
                 destinationId: destinationId,
@@ -67,7 +66,7 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPl
             };
 
             try {
-                const response = await axios.post("http://localhost:8080/plans", data, {
+                const response = await axiosInstance.post("/plans", data, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -80,39 +79,10 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPl
                 onClose();
 
             } catch (error) {
-                if (error.response && error.response.status === 500) {
-                    console.warn("Access token expired, attempting refresh...");
-
-                    try {
-                        console.log("refreshToken", refreshToken);
-                        const refreshResponse = await axios.post("http://localhost:8080/auth/refresh", {
-                            refreshToken: refreshToken
-                        });
-
-                        const newAccessToken = refreshResponse.data;
-                        localStorage.setItem("token", newAccessToken);
-
-                        const retryResponse = await axios.post("http://localhost:8080/plans", data, {
-                            headers: {
-                                Authorization: `Bearer ${newAccessToken}`,
-                            },
-                        });
-
-                        const planId = retryResponse.data.planId;
-                        console.log("일정 생성 응답 (갱신 후):", retryResponse);
-
-                        setPlanId(planId);
-                        onClose();
-                    } catch (refreshError) {
-                        console.error("토큰 갱신 중 오류 발생:", refreshError);
-                    }
-                } else {
-                    console.error("요청 중 오류 발생:", error);
-                }
+                console.error("요청 중 오류 발생:", error);
             }
         }
     };
-
 
     return (
         <div className="datechoosemodal">

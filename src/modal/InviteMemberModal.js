@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { axiosInstance } from "../axiosinstance/Axiosinstance";
 import "../style/InviteMemberModal.css";
 
 const InviteMemberModal = ({ show, onClose, planId }) => {
@@ -13,50 +13,17 @@ const InviteMemberModal = ({ show, onClose, planId }) => {
     }
 
     const handleSearch = async () => {
-        const token = localStorage.getItem("token");
-        const refreshToken = localStorage.getItem("refreshToken");
-
         try {
-            const response = await axios.get(
-                `http://localhost:8080/members/search/${keyword}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const response = await axiosInstance.get(`/members/search/${keyword}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
             console.log("검색 결과 :", response.data);
             setSearchResults(response.data);
         } catch (error) {
-            if (error.response && error.response.status === 500) {
-                console.warn("Access token expired, attempting refresh...");
-
-                try {
-                    console.log("refreshToken", refreshToken);
-                    const refreshResponse = await axios.post("http://localhost:8080/auth/refresh", {
-                        refreshToken: refreshToken
-                    });
-
-                    const newAccessToken = refreshResponse.data;
-                    localStorage.setItem("token", newAccessToken);
-
-                    const retryResponse = await axios.get(
-                        `http://localhost:8080/members/search/${keyword}`,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${newAccessToken}`,
-                            },
-                        }
-                    );
-                    console.log("검색 결과 :", retryResponse.data);
-                    setSearchResults(retryResponse.data);
-                } catch (refreshError) {
-                    console.error("토큰 갱신 중 오류 발생:", refreshError);
-                }
-            } else {
-                console.error("Error searching members:", error);
-                setError("사용자 검색에 실패했습니다. 다시 시도해주세요.");
-            }
+            console.error("Error searching members:", error);
+            setError("사용자 검색에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
@@ -67,51 +34,21 @@ const InviteMemberModal = ({ show, onClose, planId }) => {
     };
 
     const handleInvite = async () => {
-        const token = localStorage.getItem("token");
-        const refreshToken = localStorage.getItem("refreshToken");
-
         try {
-            const response = await axios.post(
-                `http://localhost:8080/plan/members/invite/${planId}`,
+            const response = await axiosInstance.post(
+                `/plan/members/invite/${planId}`,
                 { memberIds: addedUsers.map(user => user.id) },
                 {
                     headers: {
-                        Authorization: `Bearer ${token}`,
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
                     },
                 }
             );
             console.log("Invite response:", response.data);
             onClose();
         } catch (error) {
-            if (error.response && error.response.status === 500) {
-                console.warn("Access token expired, attempting refresh...");
-
-                try {
-                    console.log("refreshToken", refreshToken);
-                    const refreshResponse = await axios.post("http://localhost:8080/auth/refresh", {
-                        refreshToken: refreshToken
-                    });
-
-                    const newAccessToken = refreshResponse.data;
-                    localStorage.setItem("token", newAccessToken);
-
-                    const retryResponse = await axios.post(
-                        `http://localhost:8080/plan/members/invite/${planId}`,
-                        { memberIds: addedUsers.map(user => user.id) },
-                        {
-                            headers: {
-                                Authorization: `Bearer ${newAccessToken}`,
-                            },
-                        }
-                    );
-                    console.log("Invite response:", retryResponse.data);
-                    onClose();
-                } catch (refreshError) {
-                    console.error("토큰 갱신 중 오류 발생:", refreshError);
-                }
-            } else {
-                console.error("요청 중 오류 발생:", error);
-            }
+            console.error("요청 중 오류 발생:", error);
+            setError("초대 요청 중 오류가 발생했습니다. 다시 시도해주세요.");
         }
     };
 
