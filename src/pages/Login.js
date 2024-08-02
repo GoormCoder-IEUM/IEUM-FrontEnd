@@ -37,9 +37,11 @@ const Login = () => {
         },
       });
 
-      console.log("Login successful", response.data, loginData);
+      console.log("Login successful", response.data);
       localStorage.setItem("token", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
       console.log("토큰", response.data.accessToken);
+      console.log("리프레시토큰", response.data.refreshToken);
     } catch (error) {
       console.error("Error during login:", error);
       setError("Login failed. Please check your credentials and try again.");
