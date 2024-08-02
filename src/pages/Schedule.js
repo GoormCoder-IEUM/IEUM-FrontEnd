@@ -21,6 +21,12 @@ const Schedule = () => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
 
+  // 카카오맵 지도정보 관련
+  const [selectedPlace, setSelectedPlace] = useState({ name: '', address: '' });
+
+  const onPlaceSelect = (placeName, placeAddress) => {
+    setSelectedPlace({ name: placeName, address: placeAddress });
+  };
 
   useEffect(() => {
     if (krName === undefined) {
@@ -55,8 +61,9 @@ const Schedule = () => {
       case "STEP 1":
         return <SetDate selectedDates={selectedDates} krName={krName} />;
       case "STEP 2":
-        return <SetPlace selectedDates={selectedDates} krName={krName} destinationId={destinationId} planId={planId} />;
-      case "STEP 3":
+        return <SetPlace selectedDates={selectedDates} krName={krName}
+        destinationId={destinationId} planId={planId} selectedPlace={selectedPlace} />;
+        case "STEP 3":
         return <SetAccommodation selectedDates={selectedDates} />;
       default:
         return null;
@@ -73,8 +80,9 @@ const Schedule = () => {
   };
 
 const fetchPlanData = async () => {
+  const token = localStorage.getItem("token");
+  const refreshToken = localStorage.getItem("refreshToken");
   try {
-    const token = localStorage.getItem("token");
     const response = await axios.get(`http://localhost:8080/plans/${planId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -93,8 +101,42 @@ const fetchPlanData = async () => {
 
     setKrName(response.data.destinationKrName);
   } catch (error) {
-    console.error('Error fetching data:', error);
-  }
+    if (error.response && error.response.status === 500) {
+        console.warn("Access token expired, attempting refresh...");
+
+        try {
+            console.log("refreshToken", refreshToken);
+            const refreshResponse = await axios.post("http://localhost:8080/auth/refresh", {
+                refreshToken: refreshToken
+            });
+
+            const newAccessToken = refreshResponse.data;
+            localStorage.setItem("token", newAccessToken);
+
+            const retryResponse = await axios.get(`http://localhost:8080/plans/${planId}`, {
+              headers: {
+                Authorization: `Bearer ${newAccessToken}`,
+              },
+            });
+        
+            const startDate = new Date(retryResponse.data.startedAt).toISOString().split('T')[0];
+            const endDate = new Date(retryResponse.data.endedAt).toISOString().split('T')[0];
+            
+            setStartDate(startDate);
+            setEndDate(endDate);
+            
+            const selectedDates = `${startDate} ~ ${endDate}`;
+            setSelectedDates(selectedDates);
+            console.log("selectedDates ", selectedDates);
+        
+            setKrName(retryResponse.data.destinationKrName);
+        } catch (refreshError) {
+            console.error("토큰 갱신 중 오류 발생:", refreshError);
+        }
+    } else {
+        console.error("요청 중 오류 발생:", error);
+    }
+}
 };
 
 
@@ -132,7 +174,7 @@ const fetchPlanData = async () => {
       <div className="content-container">
         {renderComponent(activeStep)}
       </div>
-      <KakaoMap />
+      <KakaoMap onPlaceSelect={onPlaceSelect} />
     </div>
   );
 };
