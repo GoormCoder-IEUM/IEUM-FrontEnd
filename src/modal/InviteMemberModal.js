@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../style/InviteMemberModal.css";
 
@@ -6,6 +6,13 @@ const InviteMemberModal = ({ show, onClose, planId }) => {
   const [id, setId] = useState("");
   const [ids, setIds] = useState([]);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (planId) {
+      localStorage.setItem("planId", planId);
+      console.log("Current planId saved to localStorage:", planId);
+    }
+  }, [planId]);
 
   if (!show) {
     return null;
@@ -72,3 +79,4 @@ const InviteMemberModal = ({ show, onClose, planId }) => {
 };
 
 export default InviteMemberModal;
+

@@ -118,6 +118,7 @@ const MyPage = () => {
       setInvitations(response.data);
       console.log("받은초대: ", response.data);
       setIsInvitationsModalOpen(true);
+      
     } catch (error) {
       console.error("Error fetching invitations:", error);
     }
@@ -130,6 +131,14 @@ const MyPage = () => {
   const handleAccept = async (planId, acceptance) => {
     try {
       const token = localStorage.getItem("token");
+
+      if (acceptance === "ACCEPT") {
+        const acceptedPlanIds = JSON.parse(localStorage.getItem("acceptedPlanIds")) || [];
+        localStorage.setItem("planId", JSON.stringify(...acceptedPlanIds, planId));
+        console.log("Current planId saved to localStorage:", planId);
+        console.log("planId\t" + planId);
+      }
+
       const response = await axios.patch(
         `http://localhost:8080/plan/members/invite/${planId}/${acceptance}`,
         {},
