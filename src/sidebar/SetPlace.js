@@ -15,6 +15,7 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
     const [wsError, setWsError] = useState(false);
     const [sharedPlace, setSharedPlace] = useState([]);
     const [showWsError, setShowWsError] = useState('');
+    const [memberUUID, setMemberUUID] = useState('');
 
     useEffect(() => {
         setPlaceName(selectedPlace.name);
@@ -64,12 +65,12 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
 
     const wsConnect = async () => {
         const token = localStorage.getItem("token");
-    
+
         if (!token) {
             console.error('Token is required to connect');
             return;
         }
-    
+
         // 토큰 유효성 확인 함수 (예: 만료 시간을 확인)
         const isTokenExpired = (token) => {
             console.log("토큰 유효성 확인: ", token);
@@ -81,15 +82,15 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
                 return true;
             }
         };
-    
+
         // WebSocket 연결 설정
         let currentToken = token;
-    
+
         if (isTokenExpired(token)) {
             console.log('Token expired or missing, cannot connect to WebSocket.');
             return;
         }
-    
+
         // 유효한 토큰으로 WebSocket 연결
         stompClient.current = new StompClient({
             brokerURL: 'ws://localhost:8080/ws',
@@ -99,20 +100,20 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
             onConnect: () => {
                 console.log('Connected to WebSocket');
                 setWsConnected(true);
-    
+
                 stompClient.current.subscribe(`/sub/plans/errors`, (errMessage) => {
                     const receivedErrMessage = errMessage.body;
                     console.log("웹소켓 에러응답:", receivedErrMessage);
                     setWsError(receivedErrMessage);
                 });
-    
+
                 if (planId) {
                     const subscription = stompClient.current.subscribe(`/sub/plans/${planId}`, (message) => {
                         const receivedMessage = JSON.parse(message.body);
                         console.log("웹소켓 응답:", receivedMessage);
                         setSharedPlace((prevMessages) => [...prevMessages, receivedMessage]);
                     });
-    
+
                     return () => {
                         if (subscription) {
                             subscription.unsubscribe();
@@ -128,14 +129,13 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
             onWebSocketClose: () => {
                 console.log('WebSocket connection closed');
                 setWsConnected(false);
-    
-                // 재시도 시 새로운 토큰 갱신 후 연결 시도
+
                 setTimeout(async () => {
                     await wsConnect();
                 }, 5000);
             },
         });
-    
+
         stompClient.current.activate();
     };
 
@@ -165,7 +165,7 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
 
     useEffect(() => {
         const parsedWsError = JSON.parse(wsError)
-        if (parsedWsError.planId === planId) {
+        if (parsedWsError.planId === planId && parsedWsError.memberId === memberUUID) {
             setShowWsError(parsedWsError.errorMessage);
 
             setTimeout(() => {
@@ -176,7 +176,7 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
                 document.querySelector('.custom-modal-message').classList.add('fade-out');
             }, 2500);
         }
-    }, [wsError, planId]);
+    }, [wsError, planId, memberUUID]);
 
     useEffect(() => {
         const fetchSharedPlaces = async () => {
@@ -199,7 +199,29 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
         return () => {
             disconnect();
         };
-    }, [planId]); // Add planId as dependency to refetch when it changes
+    }, [planId]);
+
+    useEffect(() => {
+        const saveMemberId = async () => {
+            try {
+                const response = await axiosInstance.get(`/my-page`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                });
+                console.log("마이페이지api 사용자 정보 : ", response.data);
+                console.log("마이페이지api 사용자 정보2 : ",response.data.id);
+                setMemberUUID(response.data.id);
+            } catch (error) {
+                console.error("요청 중 오류 발생:", error);
+            }
+        }
+        saveMemberId();
+    }, []);
+
+    useEffect(() => {
+        console.log("업데이트된 사용자ID : ", memberUUID);
+    }, [memberUUID]);
 
     return (
         <div className="step2-container">
@@ -211,14 +233,16 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
                 </div>
                 <div className="places-list">
                     {places.map((place) => (
-                        <div key={place.id} className="place-item">
-                            <h3>{place.placeName}</h3>
-                            <p>{place.address}</p>
-                            <button onClick={() => publishMessage(place.id)}>공유하기</button>
+                        <div key={place.id} className="place-item-container">
+                            <div className="place-item">
+                                <h3>{place.placeName}</h3>
+                                <p>{place.address}</p>
+                            </div>
+                            <button className="share-btn" onClick={() => publishMessage(place.id)}>공유</button>
                         </div>
                     ))}
                 </div>
-
+    
                 <div className="add-place-form">
                     <input
                         type="text"
@@ -240,22 +264,23 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
                         <option value={2}>식당/카페</option>
                         <option value={3}>숙소</option>
                     </select>
-                    <button onClick={handleAddPlaceClick}>추가</button>
+                    <button className="add-btn" onClick={handleAddPlaceClick}>추가</button>
                 </div>
             </div>
             <div className="selected-places">
-                <h2>Selected Places</h2>
+                <h2>친구와 공유중인 장소</h2>
                 <ul>
                     {sharedPlace.map((msg, index) => (
-                        <li key={index}>
-                            <div>Place Name: {msg.placeName}</div>
-                            <div>Address: {msg.address}</div>
+                        <li key={index} className="selected-place-item">
+                            <h3>{msg.placeName}</h3>
+                            <p>{msg.address}</p>
                         </li>
                     ))}
                 </ul>
             </div>
         </div>
     );
+    
 };
 
 export default SetPlace;

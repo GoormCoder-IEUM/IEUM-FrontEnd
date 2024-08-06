@@ -73,7 +73,7 @@ const InviteMemberModal = ({ show, onClose, planId }) => {
                             {searchResults.map((result) => (
                                 <li key={result.id}>
                                     {result.name}
-                                    <button className="add-btn" onClick={() => handleAddUser(result)}>추가</button>
+                                    <button className="add-btn" onClick={() => handleAddUser(result)}>&#43;</button>
                                 </li>
                             ))}
                         </ul>

@@ -12,13 +12,79 @@
     height: 100%;
 }
 
-.places-list {
-    margin-top: 20px;
+.add-place-form {
+    display: flex;
+    flex-direction: column;
+    margin: 10px 0 0 0;
 }
 
-.place-item {
-    border-bottom: 1px solid #ddd;
-    padding: 10px 0;
+.add-place-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    transition: border-color 1s ease;
+}
+
+.add-place-form input:focus {
+    border-color: #5fb1aa;
+    outline: none;
+}
+
+
+.add-place-form select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+    border-radius: 5px;
+    background: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23999" d="M2 5L4 2H0z"/></svg>') no-repeat right 10px center;
+    background-size: 10px;
+    background-color: #f9f9f9;
+}
+
+.add-place-form select option {
+    color: #333;
+    background-color: #fff;
+}
+
+.step2-container .share-btn {
+    margin-left: auto;
+    padding: 5px;
+    cursor: pointer;
+    background-color: #5fb1aa;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    min-width: 60px;
+}
+
+.step2-container .add-btn {
+    margin: 10px auto;
+    padding: 5px;
+    cursor: pointer;
+    background-color: #5fb1aa;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    width: 60px;
+}
+
+.place-item-container {
+    border-bottom: 1px solid #0000001e;
+    display: flex;
+    /* Use flexbox to align items */
+    align-items: center;
+    /* Vertically align items */
+    justify-content: space-between;
+    /* Space between the text and button */
+    padding: 10px 5px;
+    /* Add some padding for better spacing */
 }
 
 .place-item h3 {
@@ -30,7 +96,16 @@
 }
 
 .selected-places {
-    min-width: 250px;
+    width: 350px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+.selected-places ul {
+    padding-inline-start: 0;
+    padding: 10px 5px;
+    /* Add some padding for better spacing */
 }
 
 .selected-place-item {

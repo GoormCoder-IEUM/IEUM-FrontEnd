@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import koLocale from '@fullcalendar/core/locales/ko';
 import interactionPlugin from "@fullcalendar/interaction";
 import { axiosInstance } from "../axiosinstance/Axiosinstance";
 import "../style/MyPage.css";
@@ -60,6 +61,9 @@ const MyPage = () => {
                     title: schedule.destinationName,
                     start: schedule.startedAt,
                     end: schedule.endedAt,
+                    backgroundColor: '#5fb1aa',
+                    borderColor: '#ff7f50',
+                    textColor: '#ffffff'
                 }));
                 setSchedules(response.data);
                 setEvents(formattedEvents);
@@ -226,6 +230,23 @@ const MyPage = () => {
         navigate('/schedule', { state: { planIdForState } });
     }
 
+
+    // fullcalendar 커스터마이징
+    const renderEventContent = (eventInfo) => {
+        const startTime = new Date(eventInfo.event.start).toLocaleTimeString('ko-KR', {
+          hour: 'numeric',
+          minute: 'numeric',
+          hour12: true
+        });
+    
+        return (
+          <div className="custom-event-content">
+            <div className="custom-event-time">{startTime}</div>
+            <div className="custom-event-title">{eventInfo.event.title}</div>
+          </div>
+        );
+      };
+
     return (
         <div className="mypage-container">
             <div className="profile-section">
@@ -233,18 +254,15 @@ const MyPage = () => {
                 {memberInfo ? (
                     <>
                         <div className="profile-item">이름: {memberInfo.name}</div>
-                        <div className="profile-item">아이디: {memberInfo.loginId}</div>
-                        <div className="profile-item">성별: {memberInfo.gender}</div>
                         <div className="profile-item">생일: {new Date(memberInfo.birth).toLocaleDateString()}</div>
                         <div className="profile-item">가입일: {new Date(memberInfo.createdAt).toLocaleDateString()}</div>
                     </>
                 ) : (
                     <div>오류 발생 재로그인 필요..</div>
                 )}
-                <div className="profile-item" onClick={openEditModal}>회원 정보 수정</div>
-                <div className="profile-item" onClick={openInvitationsModal}>받은 초대 조회</div>
-                <div className="profile-item" onClick={openPasswordModal}>비밀번호 재설정</div>
-                <div className="profile-item">회원탈퇴</div>
+                <div className="profile-item clickable" onClick={openEditModal}>회원 정보 수정</div>
+                <div className="profile-item clickable" onClick={openInvitationsModal}>받은 초대 조회</div>
+                <div className="profile-item clickable" onClick={openPasswordModal}>비밀번호 재설정</div>
             </div>
             <div className="content-section">
                 <div className="tabs">
@@ -270,7 +288,7 @@ const MyPage = () => {
                                         <div>목적지: {schedule.destinationName}</div>
                                         <div>시작일: {new Date(schedule.startedAt).toLocaleDateString()}</div>
                                         <div>종료일: {new Date(schedule.endedAt).toLocaleDateString()}</div>
-                                        <div>교통수단: {schedule.vehicle}</div>
+                                        <div>교통수단: {schedule.vehicle === "OWN_CAR" ? "자가용" : "대중교통"}</div>
                                         <button onClick={() => handleEditPlan(schedule)}>일정 확인</button>
                                     </div>
                                 ))
@@ -283,8 +301,11 @@ const MyPage = () => {
                             <FullCalendar
                                 plugins={[dayGridPlugin, interactionPlugin]}
                                 initialView="dayGridMonth"
+                                locales={[koLocale]}  // 로케일 설정
+                                locale="ko"           // 로케일 설정
                                 events={events}
                                 dateClick={handleDateClick}
+                                eventContent={renderEventContent}
                                 height="100%"
                             />
                         </div>

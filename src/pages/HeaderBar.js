@@ -6,33 +6,23 @@ const HeaderBar = () => {
   return (
     <nav>
       <ul>
-        <li>
-          <Link to="/">Main</Link>
-        </li>
-        <li>
-          <Link to="/login">Login</Link>
-        </li>
-        <li>
-          <Link to="/signup">Signup</Link>
-        </li>
-        <li>
-          <Link to="/mypage">My Page</Link>
-        </li>
-        <li>
-          <Link to="/schedule">Schedule</Link>
-        </li>
-        <li>
-          <Link to="/select-destination">Select Destination</Link>
-        </li>
-        <li>
-          <Link to="/select-accommodation">Select Accommodation</Link>
-        </li>
-        <li>
-          <Link to="/finaldata">Finaldata</Link>
-        </li>
-        <li>
-          <Link to = "/chat">chat</Link>
-        </li>
+        <div>
+          <Link to="/">
+            <img src="/assets/ieum_logo.png" alt="Logo" className="logo-image" />
+          </Link>
+        </div>
+
+        <div className="nav-menu-container">
+          <li className="nav-menu">
+            <Link to="/login">Login</Link>
+          </li>
+          <li className="nav-menu">
+            <Link to="/signup">Signup</Link>
+          </li>
+          <li className="nav-menu">
+            <Link to="/mypage">My Page</Link>
+          </li>
+        </div>
       </ul>
     </nav>
   );
