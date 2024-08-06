@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import '../style/Kakaomap.css';
 
-const KakaoMap = () => {
+const KakaoMap = ({ onPlaceSelect }) => {
   const [map, setMap] = useState(null);
-  const [places, setPlaces] = useState([]);
-  const [selectedPlaces, setSelectedPlaces] = useState([]);
+  const [isSearchTabOpen, setIsSearchTabOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [placesService, setPlacesService] = useState(null);
+  const [markers, setMarkers] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
 
   useEffect(() => {
     const waitForKakao = () => {
@@ -26,51 +29,94 @@ const KakaoMap = () => {
 
       const mapInstance = new window.kakao.maps.Map(container, options);
       setMap(mapInstance);
+
+      // Places 서비스 인스턴스 생성
+      const ps = new window.kakao.maps.services.Places();
+      setPlacesService(ps);
     };
 
     waitForKakao();
   }, []);
 
-  useEffect(() => {
-    const fetchPlaces = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/plans/1/places');
-        setPlaces(response.data);
-      } catch (error) {
-        console.error('Error fetching places:', error);
+  const handleSearch = () => {
+    if (!searchQuery || !placesService) return;
+
+    placesService.keywordSearch(searchQuery, (data, status, pagination) => {
+      if (status === window.kakao.maps.services.Status.OK) {
+        setSearchResults(data);
+
+        // 기존 마커 제거
+        markers.forEach(marker => marker.setMap(null));
+
+        // 새로운 마커 추가
+        const newMarkers = data.map(place => {
+          const marker = new window.kakao.maps.Marker({
+            position: new window.kakao.maps.LatLng(place.y, place.x),
+            map: map,
+          });
+
+          const infowindow = new window.kakao.maps.InfoWindow({
+            content: `<div style="padding:5px;">${place.place_name}</div>`,
+          });
+
+          window.kakao.maps.event.addListener(marker, 'click', () => {
+            infowindow.open(map, marker);
+          });
+
+          return marker;
+        });
+
+        setMarkers(newMarkers);
+
+        // 지도 중심을 첫 번째 검색 결과 위치로 이동
+        if (data.length > 0) {
+          map.setCenter(new window.kakao.maps.LatLng(data[0].y, data[0].x));
+        }
+      } else {
+        console.error('Search failed:', status);
       }
-    };
+    });
+  };
 
-    fetchPlaces();
-  }, []);
-
-  useEffect(() => {
-    if (map) {
-      const bounds = new window.kakao.maps.LatLngBounds();
-
-      selectedPlaces.forEach((place) => {
-        const position = new window.kakao.maps.LatLng(place.latitude, place.longitude);
-        const marker = new window.kakao.maps.Marker({ position });
-        marker.setMap(map);
-        bounds.extend(position);
-      });
-
-      if (selectedPlaces.length > 0) {
-        map.setBounds(bounds);
-      }
-    }
-  }, [selectedPlaces, map]);
-
-  const handleSelectPlace = (place) => {
-    setSelectedPlaces((prev) => [...prev, place]);
-    const position = new window.kakao.maps.LatLng(place.latitude, place.longitude);
-    map.setCenter(position);
+  const handleResultClick = (place) => {
+    map.setCenter(new window.kakao.maps.LatLng(place.y, place.x));
+    onPlaceSelect(place.place_name, place.road_address_name || place.address_name);
   };
 
   return (
-    <div style={{ display: 'flex' }}>
-      <div style={{ flex: 2 }}>
-        <div id="map" style={{ width: '500px', height: '650px', border: '1px solid black' }}></div>
+    <div className="map-container">
+      <div id="map" className="map"></div>
+      <div className={`search-tab ${isSearchTabOpen ? 'open' : ''}`}>
+        <button className="map-toggle-btn" onClick={() => setIsSearchTabOpen(!isSearchTabOpen)}>
+          {isSearchTabOpen ? 'Close Search' : 'Open Search'}
+        </button>
+        {isSearchTabOpen && (
+          <div className="search-tab-content">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search places"
+            />
+            <button className="map-search-btn" onClick={handleSearch}>Search</button>
+            {searchResults.length > 0 && (
+              <>
+                <h3>Search Results</h3>
+                <div className="map-search-result">
+                  <ul>
+                    {searchResults.map((place, index) => (
+                      <li key={index} onClick={() => handleResultClick(place)}>
+                        <strong>{place.place_name}</strong><br />
+                        {place.road_address_name || place.address_name}<br />
+                        {place.phone}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

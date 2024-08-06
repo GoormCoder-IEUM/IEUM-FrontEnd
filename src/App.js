@@ -13,6 +13,7 @@ import SelectAccommodation from "./pages/SelectAccommodation";
 import FinalData from "./pages/FinalData";
 import KakaoMap from "./pages/KakaoMap";
 import Chat from "./pages/Chat";
+import KakaoLogin from "./pages/KakaoLogin";
 
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
         <Route path="/chat" element={<Chat/>}/>
         <Route path="/map" element={<KakaoMap/>}/>
         <Route path="/login" element={<Login />} />
+        <Route path="/kakaologin" element={<KakaoLogin />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/schedule" element={<Schedule />} />

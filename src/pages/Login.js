@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../style/Login.css";
 
@@ -7,22 +7,12 @@ const Login = () => {
   const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-  const [kakaoCode, setKakaoCode] = useState(null);
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if(kakaoCode === null) {
-    const code = new URL(window.location.href).searchParams.get("code");
-    setKakaoCode(code);
-  }
-    console.log("code : ", kakaoCode);
-  }, [kakaoCode]);
-
   // 카카오 로그인
-
-  const Rest_api_key = 'e6bf5c66c87be4af975d5146e5059b8b' //REST API KEY
-  const redirect_uri = 'http://localhost:3000/login' //Redirect URI
+  const Rest_api_key = '57d8ed74ba0df4a9a24520ab381936d7' //REST API KEY
+  const redirect_uri = 'http://localhost:3000/kakaologin' //Redirect URI
   // oauth 요청 URL
   const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${Rest_api_key}&redirect_uri=${redirect_uri}&response_type=code`
   
@@ -47,9 +37,11 @@ const Login = () => {
         },
       });
 
-      console.log("Login successful", response.data, loginData);
+      console.log("Login successful", response.data);
       localStorage.setItem("token", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
       console.log("토큰", response.data.accessToken);
+      console.log("리프레시토큰", response.data.refreshToken);
     } catch (error) {
       console.error("Error during login:", error);
       setError("Login failed. Please check your credentials and try again.");
@@ -86,7 +78,7 @@ const Login = () => {
         <button type="submit">Login</button>
       </form>
 
-      <button onClick={handleKakaoLogin}>카카오 로그인</button>
+      <button className="kakao-btn" onClick={handleKakaoLogin}></button>
 
     </div>
   );

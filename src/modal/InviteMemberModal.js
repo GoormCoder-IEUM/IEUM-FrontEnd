@@ -1,81 +1,102 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import { axiosInstance } from "../axiosinstance/Axiosinstance";
 import "../style/InviteMemberModal.css";
 
 const InviteMemberModal = ({ show, onClose, planId }) => {
-  const [id, setId] = useState("");
-  const [ids, setIds] = useState([]);
-  const [error, setError] = useState(null);
+    const [keyword, setKeyword] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
+    const [addedUsers, setAddedUsers] = useState([]);
+    const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (planId) {
-      localStorage.setItem("planId", planId);
-      console.log("Current planId saved to localStorage:", planId);
+    if (!show) {
+        return null;
     }
-  }, [planId]);
 
-  if (!show) {
-    return null;
-  }
-
-  const handleAddId = () => {
-    if (id && !ids.includes(id.trim())) {
-      setIds([...ids, id.trim()]);
-      setId("");
-    }
-  };
-
-  const handleInvite = async () => {
-    const token = localStorage.getItem("token");
-    try {
-      const response = await axios.post(
-        `http://localhost:8080/plan/members/invite/${planId}`,
-        { memberLoginIds: ids },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+    const handleSearch = async () => {
+        try {
+            const response = await axiosInstance.get(`/members/search/${keyword}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+            console.log("검색 결과 :", response.data);
+            setSearchResults(response.data);
+        } catch (error) {
+            console.error("Error searching members:", error);
+            setError("사용자 검색에 실패했습니다. 다시 시도해주세요.");
         }
-      );
-      console.log("Invite response:", response.data);
-      onClose();
-    } catch (error) {
-      console.error("Error inviting member:", error);
-      setError("Failed to invite member. Please try again.");
-    }
-  };
+    };
 
-  return (
-    <div className="invitemembermodal">
-      <div className="invitemembermodal-content">
-        <button className="close-button" onClick={onClose}>&times;</button>
-        <h1>새 멤버 초대</h1>
-        {error && <p className="error">{error}</p>}
-        <div className="inv-section">
-          <input
-            type="text"
-            placeholder="ID 입력"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-          />
-          <button className="add-btn" onClick={handleAddId}>추가</button>
+    const handleAddUser = (user) => {
+        if (user && !addedUsers.find((u) => u.id === user.id)) {
+            setAddedUsers([...addedUsers, user]);
+        }
+    };
+
+    const handleInvite = async () => {
+        try {
+            const response = await axiosInstance.post(
+                `/plan/members/invite/${planId}`,
+                { memberIds: addedUsers.map(user => user.id) },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
+            console.log("Invite response:", response.data);
+            onClose();
+        } catch (error) {
+            console.error("요청 중 오류 발생:", error);
+            setError("초대 요청 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+    };
+
+    return (
+        <div className="invitemembermodal">
+            <div className="invitemembermodal-content">
+                <button className="close-button" onClick={onClose}>&times;</button>
+                <h1>새 멤버 초대</h1>
+                {error && <p className="error">{error}</p>}
+                <div className="user-search-section">
+                    <input
+                        type="text"
+                        placeholder="사용자 검색"
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
+                    />
+                    <button className="user-search-btn" onClick={handleSearch}>검색</button>
+                </div>
+                <div className="user-search-results">
+                    {searchResults.length > 0 && (
+                        <ul>
+                            {searchResults.map((result) => (
+                                <li key={result.id}>
+                                    {result.name}
+                                    <button className="add-btn" onClick={() => handleAddUser(result)}>추가</button>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+                <div className="added-ids-title">
+                    <div>초대할 사용자</div>
+                </div>
+                <div className="added-ids">
+                    {addedUsers.length > 0 && (
+                        <ul>
+                            {addedUsers.map((user) => (
+                                <li key={user.id}>{user.name}</li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+                <div className="inv-btn-wrap">
+                    <button className="inv-btn" onClick={handleInvite}>초대</button>
+                </div>
+            </div>
         </div>
-        <div className="added-ids">
-          <p>초대할 사용자</p>
-          {ids.length > 0 && (
-            <ul>
-              {ids.map((id, index) => (
-                <li key={index}>{id}</li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <div className="inv-btn-wrap">
-          <button className="inv-btn" onClick={handleInvite}>초대</button>
-        </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default InviteMemberModal;

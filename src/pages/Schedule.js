@@ -6,6 +6,8 @@ import SetPlace from "../sidebar/SetPlace";
 import SetAccommodation from "../sidebar/SetAccommodation";
 import DateChooseModal from "../modal/DateChooseModal";
 import InviteMemberModal from "../modal/InviteMemberModal";
+import KakaoMap from "./KakaoMap";
+import axios from "axios";
 
 const Schedule = () => {
   const [activeStep, setActiveStep] = useState("STEP 1");
@@ -14,11 +16,32 @@ const Schedule = () => {
   const [selectedDates, setSelectedDates] = useState("");
   const [planId, setPlanId] = useState(null);
   const location = useLocation();
-  const { destinationId, krName } = location.state || {}; 
+  const { destinationId, krName: initialKrName, planIdForState } = location.state || {};
+  const [krName, setKrName] = useState(initialKrName);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+
+  // 카카오맵 지도정보 관련
+  const [selectedPlace, setSelectedPlace] = useState({ name: '', address: '' });
+
+  const onPlaceSelect = (placeName, placeAddress) => {
+    setSelectedPlace({ name: placeName, address: placeAddress });
+  };
 
   useEffect(() => {
-    console.log("Location State:", location.state); // Add this line
-  }, [location.state]);
+    if (krName === undefined) {
+      setShowDateChooseModal(false);
+      console.log("planIdForState ", planIdForState);
+      setPlanId(planIdForState);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (planId !== null) {
+      console.log("set plan id : ", planId);
+      fetchPlanData();
+    }
+  }, [planId]);
 
   const handleSetActiveStep = (step) => {
     setActiveStep(step);
@@ -38,13 +61,84 @@ const Schedule = () => {
       case "STEP 1":
         return <SetDate selectedDates={selectedDates} krName={krName} />;
       case "STEP 2":
-        return <SetPlace selectedDates={selectedDates} krName={krName} destinationId={destinationId} planId={planId} />;
-      case "STEP 3":
+        return <SetPlace selectedDates={selectedDates} krName={krName}
+        destinationId={destinationId} planId={planId} selectedPlace={selectedPlace} />;
+        case "STEP 3":
         return <SetAccommodation selectedDates={selectedDates} />;
       default:
         return null;
     }
   };
+
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+
+const fetchPlanData = async () => {
+  const token = localStorage.getItem("token");
+  const refreshToken = localStorage.getItem("refreshToken");
+  try {
+    const response = await axios.get(`http://localhost:8080/plans/${planId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const startDate = new Date(response.data.startedAt).toISOString().split('T')[0];
+    const endDate = new Date(response.data.endedAt).toISOString().split('T')[0];
+    
+    setStartDate(startDate);
+    setEndDate(endDate);
+    
+    const selectedDates = `${startDate} ~ ${endDate}`;
+    setSelectedDates(selectedDates);
+    console.log("selectedDates ", selectedDates);
+
+    setKrName(response.data.destinationKrName);
+  } catch (error) {
+    if (error.response && error.response.status === 500) {
+        console.warn("Access token expired, attempting refresh...");
+
+        try {
+            console.log("refreshToken", refreshToken);
+            const refreshResponse = await axios.post("http://localhost:8080/auth/refresh", {
+                refreshToken: refreshToken
+            });
+
+            const newAccessToken = refreshResponse.data;
+            localStorage.setItem("token", newAccessToken);
+
+            const retryResponse = await axios.get(`http://localhost:8080/plans/${planId}`, {
+              headers: {
+                Authorization: `Bearer ${newAccessToken}`,
+              },
+            });
+        
+            const startDate = new Date(retryResponse.data.startedAt).toISOString().split('T')[0];
+            const endDate = new Date(retryResponse.data.endedAt).toISOString().split('T')[0];
+            
+            setStartDate(startDate);
+            setEndDate(endDate);
+            
+            const selectedDates = `${startDate} ~ ${endDate}`;
+            setSelectedDates(selectedDates);
+            console.log("selectedDates ", selectedDates);
+        
+            setKrName(retryResponse.data.destinationKrName);
+        } catch (refreshError) {
+            console.error("토큰 갱신 중 오류 발생:", refreshError);
+        }
+    } else {
+        console.error("요청 중 오류 발생:", error);
+    }
+}
+};
+
 
   return (
     <div className="container">
@@ -54,6 +148,7 @@ const Schedule = () => {
         setSelectedDates={setSelectedDates} 
         destinationId={destinationId} 
         setPlanId={setPlanId} // Pass setPlanId to DateChooseModal
+        formatDate={formatDate}
       />
       <InviteMemberModal 
         show={showInviteMemberModal} 
@@ -79,6 +174,7 @@ const Schedule = () => {
       <div className="content-container">
         {renderComponent(activeStep)}
       </div>
+      <KakaoMap onPlaceSelect={onPlaceSelect} />
     </div>
   );
 };

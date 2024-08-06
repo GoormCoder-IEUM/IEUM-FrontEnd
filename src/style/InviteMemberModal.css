@@ -8,6 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
 .invitemembermodal-content {
@@ -15,7 +16,7 @@
   padding: 20px;
   border-radius: 10px;
   width: 1024px;
-  height: 500px;
+  height: 800px;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -26,13 +27,13 @@
   margin-bottom: 20px;
 }
 
-.inv-section {
+.user-search-section {
   height: 5%;
   display: flex;
   justify-content: space-around;
 }
 
-.inv-section input {
+.user-search-section input {
   border-radius: 5px;
   background-color: #eeeeee;
   border: none;
@@ -43,6 +44,24 @@
   font-size: 1rem;
   align-content: center;
   padding-left: 15px;
+}
+
+.user-search-results {
+  width: 100%;
+  height: 300px;
+  overflow-y: auto;
+  display: flex;
+}
+
+.user-search-results ul {
+  width: 100%;
+}
+
+.user-search-results li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.25rem;
 }
 
 .add-btn {
@@ -70,10 +89,21 @@
   color: red;
 }
 
+.added-ids-title {
+  width: 100%;
+  font-size: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
 .added-ids {
   margin-top: 20px;
   height: 50%;
   overflow-y: auto;
+  border: 1px solid #c0c0c0;
+  border-radius: 5px;
+  box-sizing: border-box;
+  padding: 20px;
 }
 
 .added-ids p {
