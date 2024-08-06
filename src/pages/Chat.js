@@ -3,21 +3,35 @@ import { Client } from '@stomp/stompjs';
 import axios from 'axios';
 import '../style/chat.css';
 
-const Chat = () => {
+const Chat = ({ planId }) => { // planId prop 추가
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [client, setClient] = useState(null);
-    const [planId, setPlanId] = useState('');
     const [token, setToken] = useState('');
-    const [senderId, setSenderId] = useState(localStorage.getItem('senderId')); 
+    const [userName, setUserName] = useState('');
     const messagesEndRef = useRef(null); 
 
     useEffect(() => {
-        const savedPlanId = localStorage.getItem('planId');
         const savedToken = localStorage.getItem('token');
-        setPlanId(savedPlanId);
         setToken(savedToken);
     }, []);
+
+    useEffect(() => {
+        if (token) {
+            axios.get('http://localhost:8080/my-page', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            })
+            .then(response => {
+                setUserName(response.data.name);
+                console.log('User name fetched:', response.data.name);
+            })
+            .catch(error => {
+                console.error('Error fetching user name:', error);
+            });
+        }
+    }, [token]);
 
     useEffect(() => {
         if (planId && token) {
@@ -68,8 +82,8 @@ const Chat = () => {
             const messagePayload = {
                 planId: parseInt(planId, 10),
                 message: newMessage,
-                senderId: senderId,
-                createdAt: new Date().toISOString()
+                createdAt: new Date().toISOString(),
+                senderid: userName
             };
 
             console.log('Sending message:', messagePayload);
@@ -96,8 +110,12 @@ const Chat = () => {
             <h2 className="chat-header">채팅방</h2>
             <div className="chat-messages">
                 {messages.map((msg, index) => (
-                    <div key={index} className={`chat-message ${msg.senderId === senderId ? 'my-message' : 'other-message'}`}>
-                        <strong>{msg.sender.name}</strong>: {msg.message}
+                    <div key={index} className={`chat-message ${msg.sender.name === userName ? 'my-message' : 'other-message'}`}>
+                        {msg.sender.name !== userName && (
+                            <strong>{msg.sender.name}</strong>
+                        )}
+                        <div>{msg.message}</div>
+                        <div className="timestamp">{new Date(msg.createdAt).toLocaleTimeString()}</div>
                     </div>
                 ))}
                 <div ref={messagesEndRef} />

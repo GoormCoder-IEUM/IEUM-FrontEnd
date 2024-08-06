@@ -8,6 +8,7 @@ import DateChooseModal from "../modal/DateChooseModal";
 import InviteMemberModal from "../modal/InviteMemberModal";
 import KakaoMap from "./KakaoMap";
 import axios from "axios";
+import Chat from "./Chat";
 
 const Schedule = () => {
   const [activeStep, setActiveStep] = useState("STEP 1");
@@ -175,6 +176,7 @@ const fetchPlanData = async () => {
         {renderComponent(activeStep)}
       </div>
       <KakaoMap onPlaceSelect={onPlaceSelect} />
+      <Chat planId={planId}/>
     </div>
   );
 };
