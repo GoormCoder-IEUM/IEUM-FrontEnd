@@ -100,3 +100,4 @@ const InviteMemberModal = ({ show, onClose, planId }) => {
 };
 
 export default InviteMemberModal;
+

@@ -30,6 +30,9 @@ const HeaderBar = () => {
         <li>
           <Link to="/finaldata">Finaldata</Link>
         </li>
+        <li>
+          <Link to = "/chat">chat</Link>
+        </li>
       </ul>
     </nav>
   );
