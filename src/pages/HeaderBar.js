@@ -18,9 +18,6 @@ const HeaderBar = () => {
     <nav>
       <ul>
         <li>
-          <Link to="/">Main</Link>
-        </li>
-        <li>
           <Link to="/login">Login</Link>
         </li>
         <li>
@@ -31,18 +28,6 @@ const HeaderBar = () => {
         </li>
         <li>
           <Link to="/schedule">Schedule</Link>
-        </li>
-        <li>
-          <Link to="/select-destination">Select Destination</Link>
-        </li>
-        <li>
-          <Link to="/select-accommodation">Select Accommodation</Link>
-        </li>
-        <li>
-          <Link to="/finaldata">Finaldata</Link>
-        </li>
-        <li>
-          <Link to="/chat">Chat</Link>
         </li>
         <li>
           <button onClick={handleLogout}>Logout</button>
