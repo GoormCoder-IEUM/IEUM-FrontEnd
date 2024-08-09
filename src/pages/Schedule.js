@@ -110,7 +110,7 @@ const Schedule = () => {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="container">
+      <div className="schedule-container">
         <DateChooseModal
           show={showDateChooseModal}
           onClose={closeDateChooseModal}
