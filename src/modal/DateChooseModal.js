@@ -103,6 +103,8 @@ const DateChooseModal = ({
         return startDate && endDate && startDate > endDate;
     };
 
+
+
     return (
         <div className="datechoosemodal">
             <div className="datechoosemodal-content">
@@ -134,7 +136,7 @@ const DateChooseModal = ({
                     </div>
                 </div>
 
-                <div className="selected-date">
+                <div className={`selected-date ${isWrongDate() ? 'wrong' : ''}`}>
                     선택한 날짜 :{" "}
                     <strong>
                         {startDate && endDate
@@ -172,8 +174,8 @@ const DateChooseModal = ({
                     onClick={handleSelectClick}
                     disabled={!startDate || !endDate || isWrongDate()}
                     className={`select-button ${!startDate || !endDate || isWrongDate()
-                            ? "disabled"
-                            : ""
+                        ? "disabled"
+                        : ""
                         }`}
                 >
                     선택

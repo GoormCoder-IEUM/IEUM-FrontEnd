@@ -1,15 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Client } from '@stomp/stompjs';
 import axios from 'axios';
-import '../style/chat.css';
+import '../style/Chat.css';
 
-const Chat = ({ planId }) => { // planId prop 추가
+const Chat = ({ planId }) => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [client, setClient] = useState(null);
     const [token, setToken] = useState('');
     const [userName, setUserName] = useState('');
-    const messagesEndRef = useRef(null); 
+    const [isOpen, setIsOpen] = useState(false);
+    const [position, setPosition] = useState({ x: 80, y: 10 });
+    const [offset, setOffset] = useState({ x: 0, y: 0 });
+    const messagesEndRef = useRef(null);
+    const chatRef = useRef(null);
+    const dragging = useRef(false);
 
     useEffect(() => {
         const savedToken = localStorage.getItem('token');
@@ -23,13 +28,12 @@ const Chat = ({ planId }) => { // planId prop 추가
                     Authorization: `Bearer ${token}`,
                 }
             })
-            .then(response => {
-                setUserName(response.data.name);
-                console.log('User name fetched:', response.data.name);
-            })
-            .catch(error => {
-                console.error('Error fetching user name:', error);
-            });
+                .then(response => {
+                    setUserName(response.data.name);
+                })
+                .catch(error => {
+                    console.error('Error fetching user name:', error);
+                });
         }
     }, [token]);
 
@@ -40,13 +44,13 @@ const Chat = ({ planId }) => { // planId prop 추가
                     Authorization: `Bearer ${token}`,
                 }
             })
-            .then(response => {
-                setMessages(response.data);
-                scrollToBottom();
-            })
-            .catch(error => {
-                console.error('Error fetching messages:', error);
-            });
+                .then(response => {
+                    setMessages(response.data);
+                    scrollToBottom();
+                })
+                .catch(error => {
+                    console.error('Error fetching messages:', error);
+                });
 
             const stompClient = new Client({
                 brokerURL: 'ws://localhost:8080/ws',
@@ -54,15 +58,10 @@ const Chat = ({ planId }) => { // planId prop 추가
                     Authorization: `Bearer ${token}`,
                 },
                 onConnect: () => {
-                    console.log('Connected');
                     stompClient.subscribe(`/sub/chats/plan/${planId}`, (message) => {
                         const receivedMessage = JSON.parse(message.body);
-                        console.log('Received message:', receivedMessage);
                         setMessages((prevMessages) => [...prevMessages, receivedMessage]);
                     });
-                },
-                onDisconnect: () => {
-                    console.log('Disconnected');
                 },
             });
 
@@ -86,8 +85,6 @@ const Chat = ({ planId }) => { // planId prop 추가
                 senderid: userName
             };
 
-            console.log('Sending message:', messagePayload);
-
             client.publish({
                 destination: '/pub/share-plan/chats',
                 body: JSON.stringify(messagePayload),
@@ -105,30 +102,84 @@ const Chat = ({ planId }) => { // planId prop 추가
         scrollToBottom();
     }, [messages]);
 
+    const toggleChat = () => {
+        setIsOpen(!isOpen);
+    };
+
+    const handleMouseDown = (e) => {
+        dragging.current = true;
+        const chatRect = chatRef.current.getBoundingClientRect();
+        setOffset({
+            x: e.clientX - chatRect.left,
+            y: e.clientY - chatRect.top,
+        });
+        chatRef.current.style.cursor = 'grabbing';  // 드래그 중임을 표시하기 위해 커서를 변경
+    };
+
+    const handleMouseMove = (e) => {
+        if (dragging.current) {
+            const newX = (e.clientX - offset.x) / window.innerWidth * 100;
+            const newY = (e.clientY - offset.y) / window.innerHeight * 100;
+
+            setPosition({
+                x: newX,
+                y: newY,
+            });
+        }
+    };
+
+    const handleMouseUp = () => {
+        dragging.current = false;
+        chatRef.current.style.cursor = 'grab';  // 드래그 종료 후 커서를 원래대로 변경
+    };
+
     return (
-        <div className="chat-container">
-            <h2 className="chat-header">채팅방</h2>
-            <div className="chat-messages">
-                {messages.map((msg, index) => (
-                    <div key={index} className={`chat-message ${msg.sender.name === userName ? 'my-message' : 'other-message'}`}>
-                        {msg.sender.name !== userName && (
-                            <strong>{msg.sender.name}</strong>
-                        )}
-                        <div>{msg.message}</div>
-                        <div className="timestamp">{new Date(msg.createdAt).toLocaleTimeString()}</div>
+        <div
+            ref={chatRef}
+            style={{
+                position: 'absolute',
+                left: `${position.x}%`,  // 픽셀이 아닌 %로 위치 설정
+                top: `${position.y}%`,
+                cursor: 'grab',
+                zIndex: 999,
+            }}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+        >
+            <div className={`chat-container ${isOpen ? "open" : ""}`}>
+                <button className="toggle-chat-btn" onClick={toggleChat}>
+                    {isOpen ? "채팅 닫기" : "채팅 열기"}
+                </button>
+                <div className="chat-guide"> {isOpen ? "" : "드래그 해서 채팅창을 옮길 수 있습니다."}</div>
+
+                {isOpen && (
+                    <div className="chat-wrap">
+                        <div className="chat-header">채팅방</div>
+                        <div className="chat-messages">
+                            {messages.map((msg, index) => (
+                                <div key={index} className={`chat-message ${msg.sender.name === userName ? 'my-message' : 'other-message'}`}>
+                                    {msg.sender.name !== userName && (
+                                        <strong>{msg.sender.name}</strong>
+                                    )}
+                                    <div>{msg.message}</div>
+                                    <div className="timestamp">{new Date(msg.createdAt).toLocaleTimeString()}</div>
+                                </div>
+                            ))}
+                            <div ref={messagesEndRef} />
+                        </div>
+                        <div className="chat-input-container">
+                            <input
+                                type="text"
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                placeholder="메시지를 입력하세요..."
+                                className="chat-input"
+                            />
+                            <button onClick={sendMessage} className="chat-send-button">전송</button>
+                        </div>
                     </div>
-                ))}
-                <div ref={messagesEndRef} />
-            </div>
-            <div className="chat-input-container">
-                <input
-                    type="text"
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="메시지를 입력하세요..."
-                    className="chat-input"
-                />
-                <button onClick={sendMessage} className="chat-send-button">전송</button>
+                )}
             </div>
         </div>
     );

@@ -83,8 +83,8 @@ const MyPage = () => {
                     title: schedule.destinationName,
                     start: schedule.startedAt,
                     end: schedule.endedAt,
-                    backgroundColor: '#5fb1aa',
-                    borderColor: '#ff7f50',
+                    backgroundColor: '#5fb1aabc',
+                    borderColor: '#000',
                     textColor: '#ffffff'
                 }));
                 setSchedules(response.data);
@@ -298,18 +298,18 @@ const MyPage = () => {
     // fullcalendar 커스터마이징
     const renderEventContent = (eventInfo) => {
         const startTime = new Date(eventInfo.event.start).toLocaleTimeString('ko-KR', {
-          hour: 'numeric',
-          minute: 'numeric',
-          hour12: true
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
         });
-    
+
         return (
-          <div className="custom-event-content">
-            <div className="custom-event-time">{startTime}</div>
-            <div className="custom-event-title">{eventInfo.event.title}</div>
-          </div>
+            <div className="custom-event-content">
+                <div className="custom-event-time">{startTime}</div>
+                <div className="custom-event-title">{eventInfo.event.title}</div>
+            </div>
         );
-      };
+    };
 
     return (
         <div className="mypage-container">
@@ -388,12 +388,11 @@ const MyPage = () => {
                             <FullCalendar
                                 plugins={[dayGridPlugin, interactionPlugin]}
                                 initialView="dayGridMonth"
-                                locales={[koLocale]}  
-                                locale="ko"           
+                                locales={[koLocale]}
+                                locale="ko"
                                 events={events}
                                 dateClick={handleDateClick}
                                 eventContent={renderEventContent}
-                                height="100%"
                             />
                         </div>
                     )}

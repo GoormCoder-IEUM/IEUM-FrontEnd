@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "../style/MainPage.css";
 import PlaceIntroModal from "../modal/PlaceIntroModal";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import NoLoginModal from "../modal/NoLoginModal"; // NoLoginModal 컴포넌트 가져오기
 
 const MainPage = () => {
@@ -15,6 +17,10 @@ const MainPage = () => {
   const [isNoLoginModalOpen, setIsNoLoginModalOpen] = useState(false); // NoLoginModal 상태
   const searchContainerRef = useRef(null);
   const modalRef = useRef(null);
+
+  useEffect(() => {
+    AOS.init({ duration: 1000 });
+  }, []);
 
   useEffect(() => {
     // 컴포넌트가 마운트될 때 localStorage에서 token을 확인하여 로그인 상태를 설정합니다.
@@ -122,8 +128,9 @@ const MainPage = () => {
               value={searchQuery}
               onChange={handleSearchChange}
               placeholder="Search..."
+              data-aos="fade-right"
             />
-            <ul className="search-results">
+            <ul className="search-results" data-aos="fade-up">
               {searchResults.length > 0 ? (
                 searchResults.map((result) => (
                   <li key={result.id} onClick={() => handleResultClick(result)}>

@@ -7,7 +7,7 @@
   background-color: #f9f9f9;
 }
 
-h2 {
+.login-container h2 {
   text-align: center;
   margin-bottom: 20px;
 }
@@ -16,19 +16,19 @@ h2 {
   margin-bottom: 15px;
 }
 
-label {
+.login-container label {
   display: block;
   margin-bottom: 5px;
 }
 
-input,
-select {
+.login-container input,
+.login-container select {
   width: 100%;
   padding: 8px;
   box-sizing: border-box;
 }
 
-form button {
+.login-container form button {
   width: 100%;
   padding: 10px;
   background-color: #4CAF50;
@@ -38,6 +38,6 @@ form button {
   cursor: pointer;
 }
 
-form button:hover {
+.login-container form button:hover {
   background-color: #45a049;
 }
