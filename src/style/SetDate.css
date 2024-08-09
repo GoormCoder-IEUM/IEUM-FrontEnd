@@ -5,3 +5,115 @@
     border-right: 1px solid #ccc;
     height: 100%;
 }
+
+.step1-container p {
+    display: flex;
+    justify-content: center;
+}
+
+.toggle-container {
+    display: flex;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.toggle-button {
+    flex: 1;
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid #dcdcdc;
+    background-color: white;
+    color: #555;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s ease;
+    border-radius: 20px 0 0 20px;
+}
+
+.toggle-button+.toggle-button {
+    border-radius: 0 20px 20px 0;
+}
+
+.toggle-button.active {
+    background-color: #5fb1aa;
+    color: white;
+    border: 1px solid #5fb1aa;
+}
+
+.toggle-button:not(.active):hover {
+    background-color: #f0f0f0;
+}
+
+.time-form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.time-input {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #dcdcdc;
+    border-radius: 4px;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    background-color: #5fb1aa;
+    color: white;
+    border-radius: 5px;
+    padding: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+    background-color: #4a9989;
+}
+
+input[type="datetime-local"]:focus::-webkit-calendar-picker-indicator {
+    background-color: #3a8878;
+    outline: none;
+}
+
+
+.time-button {
+    padding: 10px;
+    background-color: #5fb1aa;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.time-button:hover {
+    background-color: #5fb1aa;
+}
+
+/* 알림용 모달 */
+.custom-modal-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+}
+
+.custom-modal-message.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.custom-modal-message.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
