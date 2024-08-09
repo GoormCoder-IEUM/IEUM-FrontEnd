@@ -27,7 +27,29 @@ const MyPage = () => {
         newPassword: "",
     });
     const [invitations, setInvitations] = useState([]);
+    const [weatherData, setWeatherData] = useState({});
     const navigate = useNavigate();
+
+    const weatherIcons = {
+        Clear: "☀", // Clear weather (Sunny)
+        Clouds: "☁", // Cloudy weather
+        Rain: "☂", // Rainy weather
+        Snow: "☃", // Snowy weather
+    };
+
+    const getWeatherIcon = (description) => {
+        if (description.includes("clear sky")) {
+            return weatherIcons.Clear;
+        } else if (description.includes("clouds")) {
+            return weatherIcons.Clouds;
+        } else if (description.includes("rain")) {
+            return weatherIcons.Rain;
+        } else if (description.includes("snow")) {
+            return weatherIcons.Snow;
+        } else {
+            return ""; // Default: No icon
+        }
+    };
 
     useEffect(() => {
         const fetchMemberInfo = async () => {
@@ -94,6 +116,40 @@ const MyPage = () => {
         const diffTime = start - now;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays >= 0 ? `D-${diffDays}` : `D+${Math.abs(diffDays)}`;
+    };
+
+    const fetchWeather = async (destinationName, startDate, endDate) => {
+        try {
+            const response = await axiosInstance.get(`/weather/fivedays/${destinationName}`);
+            const filteredData = response.data.filter(weather => {
+                const weatherDate = new Date(weather.dateTime);
+                return weatherDate >= new Date(startDate) && weatherDate <= new Date(endDate);
+            });
+
+            const groupedWeather = filteredData.reduce((acc, weather) => {
+                const date = new Date(weather.dateTime).toLocaleDateString();
+                if (!acc[date]) {
+                    acc[date] = [];
+                }
+                acc[date].push(weather);
+                return acc;
+            }, {});
+
+            const selectedWeather = {};
+            for (const [date, weathers] of Object.entries(groupedWeather)) {
+                const morningWeather = weathers.find(w => new Date(w.dateTime).getHours() === 9) || weathers[0];
+                const afternoonWeather = weathers.find(w => new Date(w.dateTime).getHours() === 15) || weathers[1];
+                selectedWeather[date] = [morningWeather, afternoonWeather].filter(Boolean);
+            }
+
+            setWeatherData(prev => ({
+                ...prev,
+                [destinationName]: selectedWeather,
+            }));
+            console.log(`날씨 정보 (${destinationName}):`, selectedWeather);
+        } catch (error) {
+            console.error("날씨 정보를 가져오는 중 오류 발생:", error);
+        }
     };
 
     const openEditModal = () => {
@@ -280,6 +336,28 @@ const MyPage = () => {
                                         <div>종료일: {new Date(schedule.endedAt).toLocaleDateString()}</div>
                                         <div>D-Day: {calculateDDay(schedule.startedAt)}</div>
                                         <div>교통수단: {schedule.vehicle}</div>
+                                        {calculateDDay(schedule.startedAt).startsWith('D-') && parseInt(calculateDDay(schedule.startedAt).split('-')[1]) <= 5 && (
+                                            <button onClick={() => fetchWeather(schedule.destinationName, schedule.startedAt, schedule.endedAt)}>날씨 정보 조회</button>
+                                        )}
+                                        {weatherData[schedule.destinationName] && Object.keys(weatherData[schedule.destinationName]).length > 0 && (
+                                            <div className="weather-container">
+                                                {Object.entries(weatherData[schedule.destinationName]).map(([date, weathers], index) => (
+                                                    <div key={index} className="weather-day">
+                                                        <div>{date}</div>
+                                                        {weathers.map((weather, i) => (
+                                                            <div key={i} className="weather-card">
+                                                                <div className="weather-time">{new Date(weather.dateTime).getHours()}:00</div>
+                                                                <div className="weather-icon">{getWeatherIcon(weather.weatherDescription)}</div>
+                                                                <div className="weather-temperature">
+                                                                    <span className="high-temp">{weather.temperature}°C</span>
+                                                                </div>
+                                                                <div className="weather-humidity">💧{weather.humidity}%</div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                         <button onClick={() => handleEditPlan(schedule)}>일정 확인</button>
                                     </div>
                                 ))
