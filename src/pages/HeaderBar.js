@@ -1,6 +1,7 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../style/HeaderBar.css";
+import logo from "../img/Logo.png";
 
 const HeaderBar = () => {
   const navigate = useNavigate();
@@ -15,22 +16,25 @@ const HeaderBar = () => {
   };
 
   return (
-    <nav>
-      <ul>
-        <li>
-          <Link to="/login">Login</Link>
+    <nav className="header-bar">
+      <ul className="nav-list">
+        <li className="nav-item-img">
+          <img src={logo} alt="Logo" className="logo" />
         </li>
-        <li>
-          <Link to="/signup">Signup</Link>
+        <li className="nav-item">
+          <Link to="/login" className="nav-link">Login</Link>
         </li>
-        <li>
-          <Link to="/mypage">My Page</Link>
+        <li className="nav-item">
+          <Link to="/signup" className="nav-link">Signup</Link>
         </li>
-        <li>
-          <Link to="/schedule">Schedule</Link>
+        <li className="nav-item">
+          <Link to="/mypage" className="nav-link">My Page</Link>
         </li>
-        <li>
-          <button onClick={handleLogout}>Logout</button>
+        <li className="nav-item">
+          <Link to="/schedule" className="nav-link">Schedule</Link>
+        </li>
+        <li className="nav-item">
+          <button onClick={handleLogout} className="nav-link logout-button">Logout</button>
         </li>
       </ul>
     </nav>
