@@ -8,8 +8,9 @@ import DateChooseModal from "../modal/DateChooseModal";
 import InviteMemberModal from "../modal/InviteMemberModal";
 import KakaoMap from "./KakaoMap";
 import { axiosInstance } from "../axiosinstance/Axiosinstance";
-import axios from "axios";
 import Chat from "./Chat";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 const Schedule = () => {
   const [activeStep, setActiveStep] = useState("STEP 1");
@@ -108,42 +109,53 @@ const Schedule = () => {
   };
 
   return (
-    <div className="container">
-      <DateChooseModal
-        show={showDateChooseModal}
-        onClose={closeDateChooseModal}
-        setSelectedDates={setSelectedDates}
-        destinationId={destinationId}
-        setPlanId={setPlanId}
-        formatDate={formatDate}
-      />
-      <InviteMemberModal
-        show={showInviteMemberModal}
-        onClose={closeInviteMemberModal}
-        planId={planId}
-      />
-      <div className="sidebar-container">
+    <DndProvider backend={HTML5Backend}>
+      <div className="container">
+        <DateChooseModal
+          show={showDateChooseModal}
+          onClose={closeDateChooseModal}
+          setSelectedDates={setSelectedDates}
+          destinationId={destinationId}
+          setPlanId={setPlanId}
+          formatDate={formatDate}
+        />
+        <InviteMemberModal
+          show={showInviteMemberModal}
+          onClose={closeInviteMemberModal}
+          planId={planId}
+        />
+        <div className="sidebar-container">
         <div className="sidebar">
-          <div className="sidebar-detail" onClick={() => handleSetActiveStep("STEP 1")}>
-            <div>STEP 1</div>
-            <div>날짜 확인</div>
-          </div>
-          <div className="sidebar-detail" onClick={() => handleSetActiveStep("STEP 2")}>
-            <div>STEP 2</div>
-            <div>장소 선택</div>
-          </div>
-          <div className="sidebar-detail" onClick={() => handleSetActiveStep("STEP 3")}>
-            <div>STEP 3</div>
-            <div>시간 선택</div>
+            <div
+              className={`sidebar-detail ${activeStep === "STEP 1" ? "active" : ""}`}
+              onClick={() => handleSetActiveStep("STEP 1")}
+            >
+              <div>STEP 1</div>
+              <div>날짜 확인</div>
+            </div>
+            <div
+              className={`sidebar-detail ${activeStep === "STEP 2" ? "active" : ""}`}
+              onClick={() => handleSetActiveStep("STEP 2")}
+            >
+              <div>STEP 2</div>
+              <div>장소 선택</div>
+            </div>
+            <div
+              className={`sidebar-detail ${activeStep === "STEP 3" ? "active" : ""}`}
+              onClick={() => handleSetActiveStep("STEP 3")}
+            >
+              <div>STEP 3</div>
+              <div>시간 선택</div>
+            </div>
           </div>
         </div>
+        <div className="content-container">
+          {renderComponent(activeStep)}
+        </div>
+        <KakaoMap onPlaceSelect={onPlaceSelect} />
+        <Chat planId={planId} />
       </div>
-      <div className="content-container">
-        {renderComponent(activeStep)}
-      </div>
-      <KakaoMap onPlaceSelect={onPlaceSelect} />
-      <Chat planId={planId}/>
-    </div>
+    </DndProvider>
   );
 };
 
