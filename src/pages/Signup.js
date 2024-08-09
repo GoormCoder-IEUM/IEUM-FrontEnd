@@ -13,6 +13,11 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
+  const handleBirthDate = (e) => {
+    setBirthdate(e.target.value)
+    e.target.blur();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -88,7 +93,7 @@ const Signup = () => {
             type="date"
             id="birthdate"
             value={birthdate}
-            onChange={(e) => setBirthdate(e.target.value)}
+            onChange={handleBirthDate}
             required
           />
         </div>
