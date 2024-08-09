@@ -16,26 +16,25 @@ const HeaderBar = () => {
   };
 
   return (
-    <nav className="header-bar">
-      <ul className="nav-list">
-        <li className="nav-item-img">
-          <img src={logo} alt="Logo" className="logo" />
-        </li>
-        <li className="nav-item">
-          <Link to="/login" className="nav-link">Login</Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/signup" className="nav-link">Signup</Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/mypage" className="nav-link">My Page</Link>
-        </li>
-        <li className="nav-item">
-          <Link to="/schedule" className="nav-link">Schedule</Link>
-        </li>
-        <li className="nav-item">
-          <button onClick={handleLogout} className="nav-link logout-button">Logout</button>
-        </li>
+    <nav>
+      <ul>
+        <div>
+          <Link to="/">
+            <img src="/assets/ieum_logo.png" alt="Logo" className="logo-image" />
+          </Link>
+        </div>
+
+        <div className="nav-menu-container">
+          <li className="nav-menu">
+            <Link to="/login">Login</Link>
+          </li>
+          <li className="nav-menu">
+            <Link to="/signup">Signup</Link>
+          </li>
+          <li className="nav-menu">
+            <Link to="/mypage">My Page</Link>
+          </li>
+        </div>
       </ul>
     </nav>
   );

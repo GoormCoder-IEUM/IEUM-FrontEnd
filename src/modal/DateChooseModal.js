@@ -5,11 +5,27 @@ import interactionPlugin from "@fullcalendar/interaction";
 import { axiosInstance } from "../axiosinstance/Axiosinstance";
 import "../style/DateChooseModal.css";
 
-const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPlanId, formatDate }) => {
+const DateChooseModal = ({
+    show,
+    onClose,
+    setSelectedDates,
+    destinationId,
+    setPlanId,
+    formatDate,
+}) => {
     const [calendarEvents, setCalendarEvents] = useState([]);
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
     const [vehicle, setVehicle] = useState("PUBLIC_TRANSPORTATION");
+
+    const currentMonth = new Date();
+    currentMonth.setDate(1);
+
+    const nextMonth = new Date(
+        currentMonth.getFullYear(),
+        currentMonth.getMonth() + 1,
+        1
+    );
 
     if (!show) {
         return null;
@@ -24,7 +40,7 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPl
                     start,
                     end: new Date(start).setDate(start.getDate() + 1),
                     display: "background",
-                    backgroundColor: "#ff9f89",
+                    backgroundColor: "#000",
                 },
             ]);
         } else if (!endDate) {
@@ -40,7 +56,7 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPl
                     start: startDate,
                     end: adjustedEnd,
                     display: "background",
-                    backgroundColor: "#ff9f89",
+                    backgroundColor: "#000",
                 },
             ]);
 
@@ -55,7 +71,7 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPl
     };
 
     const handleSelectClick = async () => {
-        if (startDate && endDate) {
+        if (startDate && endDate && !isWrongDate()) {
             const token = localStorage.getItem("token");
 
             const data = {
@@ -77,11 +93,14 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPl
 
                 setPlanId(planId);
                 onClose();
-
             } catch (error) {
                 console.error("요청 중 오류 발생:", error);
             }
         }
+    };
+
+    const isWrongDate = () => {
+        return startDate && endDate && startDate > endDate;
     };
 
     return (
@@ -95,7 +114,7 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPl
                         <FullCalendar
                             plugins={[dayGridPlugin, interactionPlugin]}
                             initialView="dayGridMonth"
-                            initialDate="2024-07-01"
+                            initialDate={currentMonth}
                             selectable={true}
                             select={handleDateSelect}
                             events={calendarEvents}
@@ -106,7 +125,7 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPl
                         <FullCalendar
                             plugins={[dayGridPlugin, interactionPlugin]}
                             initialView="dayGridMonth"
-                            initialDate="2024-08-01"
+                            initialDate={nextMonth}
                             selectable={true}
                             select={handleDateSelect}
                             events={calendarEvents}
@@ -116,7 +135,14 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPl
                 </div>
 
                 <div className="selected-date">
-                    선택한 날짜 : <strong>{startDate && endDate ? `${formatDate(startDate)} ~ ${formatDate(endDate)}` : "날짜를 선택해주세요."}</strong>
+                    선택한 날짜 :{" "}
+                    <strong>
+                        {startDate && endDate
+                            ? isWrongDate()
+                                ? "시작 날짜가 마지막 날짜보다 늦습니다. 다시 선택을 눌러서 날짜를 선택해주세요."
+                                : `${formatDate(startDate)} ~ ${formatDate(endDate)}`
+                            : "날짜를 선택해주세요."}
+                    </strong>
                 </div>
 
                 <div className="vehicle-select">
@@ -142,7 +168,16 @@ const DateChooseModal = ({ show, onClose, setSelectedDates, destinationId, setPl
                 </div>
 
                 <button onClick={handleReset}>다시 선택</button>
-                <button onClick={handleSelectClick}>선택</button>
+                <button
+                    onClick={handleSelectClick}
+                    disabled={!startDate || !endDate || isWrongDate()}
+                    className={`select-button ${!startDate || !endDate || isWrongDate()
+                            ? "disabled"
+                            : ""
+                        }`}
+                >
+                    선택
+                </button>
             </div>
         </div>
     );

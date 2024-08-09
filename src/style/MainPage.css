@@ -49,7 +49,7 @@ body, html, #root {
 }
 
 .start-button:hover {
-    background-color: #333;
+    background-color: #5fb1aa;
 }
 
 .video-container {
@@ -80,7 +80,7 @@ video {
 .search-input {
     padding: 10px;
     font-size: 1.25rem;
-    width: 94%;
+    width: 100%;
     border: 1px solid #ccc;
     border-radius: 25px;
     padding-left: 40px; /* Add space for the icon */

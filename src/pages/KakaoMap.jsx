@@ -143,7 +143,7 @@ const KakaoMap = ({ onPlaceSelect }) => {
       <div id="map" className="map"></div>
       <div className={`search-tab ${isSearchTabOpen ? 'open' : ''}`}>
         <button className="map-toggle-btn" onClick={() => setIsSearchTabOpen(!isSearchTabOpen)}>
-          {isSearchTabOpen ? 'Close Search' : 'Open Search'}
+          {isSearchTabOpen ? '검색창 닫기' : '검색창 열기'}
         </button>
         {isSearchTabOpen && (
           <div className="search-tab-content">
@@ -151,9 +151,9 @@ const KakaoMap = ({ onPlaceSelect }) => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search places"
+              placeholder="장소를 검색해주세요"
             />
-            <button className="map-search-btn" onClick={() => handleSearch()}>Search</button>
+            <button className="map-search-btn" onClick={() => handleSearch()}>검색</button>
             <div className="category-buttons">
               {categories.map((category) => (
                 <button
@@ -167,7 +167,7 @@ const KakaoMap = ({ onPlaceSelect }) => {
             </div>
             {searchResults.length > 0 ? (
               <>
-                <h3>Search Results</h3>
+                <h3>검색 결과</h3>
                 <div className="map-search-result">
                   <ul>
                     {searchResults.map((place, index) => (
