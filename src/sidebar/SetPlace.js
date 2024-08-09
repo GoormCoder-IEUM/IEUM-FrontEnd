@@ -63,6 +63,20 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
         }
     };
 
+    const handleDeletePlace = async (placeId) => {
+        try {
+            await axiosInstance.delete(`/plans/${planId}/places/${placeId}`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+            console.log("Place deleted:", placeId);
+            await fetchSharedPlaces();
+        } catch (error) {
+            console.error("삭제 중 오류 발생:", error);
+        }
+    };
+
     const wsConnect = async () => {
         const token = localStorage.getItem("token");
 
@@ -71,7 +85,6 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
             return;
         }
 
-        // 토큰 유효성 확인 함수 (예: 만료 시간을 확인)
         const isTokenExpired = (token) => {
             console.log("토큰 유효성 확인: ", token);
             try {
@@ -83,7 +96,6 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
             }
         };
 
-        // WebSocket 연결 설정
         let currentToken = token;
 
         if (isTokenExpired(token)) {
@@ -91,7 +103,6 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
             return;
         }
 
-        // 유효한 토큰으로 WebSocket 연결
         stompClient.current = new StompClient({
             brokerURL: 'ws://localhost:8080/ws',
             connectHeaders: {
@@ -158,8 +169,25 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
                 body: body
             });
 
+            setHasFetchedPlaces(false);
+
         } else {
             console.error('Not connected to WebSocket');
+        }
+    };
+
+    const fetchSharedPlaces = async () => {
+        try {
+            const response = await axiosInstance.get(`/plans/${planId}/places/shared`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+            });
+            setHasFetchedPlaces(false);
+            setSharedPlace(response.data);
+            console.log("Shared places response:", response.data);
+        } catch (error) {
+            console.error("요청 중 오류 발생:", error);
         }
     };
 
@@ -179,20 +207,6 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
     }, [wsError, planId, memberUUID]);
 
     useEffect(() => {
-        const fetchSharedPlaces = async () => {
-            try {
-                const response = await axiosInstance.get(`/plans/${planId}/places/shared`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                });
-                setSharedPlace(response.data);
-                console.log("Shared places response:", response.data);
-            } catch (error) {
-                console.error("요청 중 오류 발생:", error);
-            }
-        };
-
         fetchSharedPlaces();
         wsConnect();
 
@@ -210,7 +224,7 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
                     },
                 });
                 console.log("마이페이지api 사용자 정보 : ", response.data);
-                console.log("마이페이지api 사용자 정보2 : ",response.data.id);
+                console.log("마이페이지api 사용자 정보2 : ", response.data.id);
                 setMemberUUID(response.data.id);
             } catch (error) {
                 console.error("요청 중 오류 발생:", error);
@@ -242,7 +256,7 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
                         </div>
                     ))}
                 </div>
-    
+
                 <div className="add-place-form">
                     <input
                         type="text"
@@ -269,18 +283,23 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
             </div>
             <div className="selected-places">
                 <h2>친구와 공유중인 장소</h2>
-                <ul>
-                    {sharedPlace.map((msg, index) => (
-                        <li key={index} className="selected-place-item">
+                {sharedPlace.map((msg, index) => (
+                    <div key={index} className="place-item-container">
+                        <div className="place-item">
                             <h3>{msg.placeName}</h3>
                             <p>{msg.address}</p>
-                        </li>
-                    ))}
-                </ul>
+                        </div>
+                        <button className="delete-btn" onClick={() => handleDeletePlace(msg.id)}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px">
+                                <path d="M0 0h24v24H0V0z" fill="none" />
+                                <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z" />
+                            </svg>
+                        </button>
+                    </div>
+                ))}
             </div>
         </div>
     );
-    
 };
 
 export default SetPlace;
