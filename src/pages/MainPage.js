@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "../style/MainPage.css";
 import PlaceIntroModal from "../modal/PlaceIntroModal";
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 
 const MainPage = () => {
   const [isSearchActive, setIsSearchActive] = useState(false);
@@ -12,6 +15,10 @@ const MainPage = () => {
   const [data, setData] = useState([]);
   const searchContainerRef = useRef(null);
   const modalRef = useRef(null);
+
+  useEffect(() => {
+    AOS.init({ duration: 1000 });
+  }, []);
 
   useEffect(() => {
     const fetchDestinationData = async () => {
@@ -99,8 +106,9 @@ const MainPage = () => {
               value={searchQuery}
               onChange={handleSearchChange}
               placeholder="Search..."
+              data-aos="fade-right"
             />
-            <ul className="search-results">
+            <ul className="search-results" data-aos="fade-up">
               {searchResults.length > 0 ? (
                 searchResults.map((result) => (
                   <li key={result.id} onClick={() => handleResultClick(result)}>

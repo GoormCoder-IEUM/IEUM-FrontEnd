@@ -17,8 +17,8 @@
   border-radius: 5px;
   text-align: center;
   width: 1024px;
-  height: 760px;
-  overflow-y: auto;
+  height: 55%;
+  overflow: auto;
 }
 
 .datechoosemodal button {
@@ -42,7 +42,16 @@
 .datechoosemodal-content .calendar-container,
 .datechoosemodal-content button,
 .selected-date {
-  margin-bottom: 20px;
+  margin-bottom: 1%;
+}
+
+.selected-date {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.selected-date.wrong strong{
+  color: red;
 }
 
 .calendar-container {
@@ -60,6 +69,11 @@
   justify-content: center;
   align-items: center;
   gap: 10px;
+}
+
+.vehicle-select label {
+  display: flex;
+  flex-direction: row;
 }
 
 

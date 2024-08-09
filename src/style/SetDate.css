@@ -11,6 +11,10 @@
     justify-content: center;
 }
 
+.step1-container h2 {
+    text-align: center;
+}
+
 .toggle-container {
     display: flex;
     border-radius: 20px;

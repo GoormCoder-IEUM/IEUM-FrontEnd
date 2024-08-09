@@ -13,7 +13,7 @@ const PlaceIntroModal = ({ isOpen, onClose, enName, krName, content, destination
 
   return (
     <div className="placeintromodal-overlay">
-      <div className="placeintromodal-content" ref={modalRef}>
+      <div className="placeintromodal-content" data-aos="zoom-in" ref={modalRef}>
         <button className="placeintromodal-close-button" onClick={onClose}>
           &times;
         </button>

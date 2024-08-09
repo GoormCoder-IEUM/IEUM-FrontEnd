@@ -41,6 +41,7 @@ const SetDetail = ({ planId, selectedDates }) => {
     // 일자별 일정 조회
     useEffect(() => {
         const fetchDailyPlaces = async () => {
+            console.log("요청 : ", `/plans/${planId}/places/shared/${day}`);
             if (!hasFetchedSharedPlaces) {
                 try {
                     const response = await axiosInstance.get(`/plans/${planId}/places/shared/${day}`, {
@@ -62,9 +63,15 @@ const SetDetail = ({ planId, selectedDates }) => {
 
 
     // 조회할 날 선택
+    useEffect(() => {
+        setHasFetchedSharedPlaces(false);
+        console.log(day);
+    }, [day]);
+    
     const handleDayChange = (event) => {
         setDay(event.target.value);
     };
+    
 
     // 삭제 요청
     const handleDeletePlace = async (placeId) => {
@@ -201,8 +208,8 @@ const SetDetail = ({ planId, selectedDates }) => {
 
                 <div className="place-item-wrap">
                     {sharedPlace.map((place) => (
-                        <div key={place.id} className="place-item-container" onClick={() => handlePlaceClick(place)}>
-                            <div className="place-item">
+                        <div key={place.id} className="place-item-container">
+                            <div className="place-item" onClick={() => handlePlaceClick(place)}>
                                 <h3 className={`place-item-category-${place.categoryId}`}>{place.placeName}</h3>
                                 <p>{place.address}</p>
                                 <p>{formatDate(place.startedAt)}~{formatDate(place.endedAt)}</p>
@@ -222,7 +229,7 @@ const SetDetail = ({ planId, selectedDates }) => {
                 <h2>일자별 일정 조회</h2>
                 <select onChange={handleDayChange}>
                     {[...Array(calcDateResult)].map((_, index) => (
-                        <option value={index + 1}>{index + 1}일차</option>
+                        <option key={index} value={index + 1}>{index + 1}일차</option>
                     ))}
                 </select>
                 {selectedDate && (
