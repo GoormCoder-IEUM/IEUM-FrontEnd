@@ -301,8 +301,8 @@ const MyPage = () => {
                             <FullCalendar
                                 plugins={[dayGridPlugin, interactionPlugin]}
                                 initialView="dayGridMonth"
-                                locales={[koLocale]}  // 로케일 설정
-                                locale="ko"           // 로케일 설정
+                                locales={[koLocale]}  
+                                locale="ko"           
                                 events={events}
                                 dateClick={handleDateClick}
                                 eventContent={renderEventContent}
