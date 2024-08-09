@@ -7,13 +7,16 @@ const HeaderBar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    // 로컬 스토리지에서 토큰 제거
+    // Remove tokens from localStorage
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
 
-    // 로그인 페이지로 리다이렉트
+    // Redirect to login page
     navigate("/login");
   };
+
+  // Check if the user is logged in by looking for the token
+  const isLoggedIn = !!localStorage.getItem("token");
 
   return (
     <nav>
@@ -25,15 +28,30 @@ const HeaderBar = () => {
         </div>
 
         <div className="nav-menu-container">
-          <li className="nav-menu">
-            <Link to="/login">Login</Link>
-          </li>
-          <li className="nav-menu">
-            <Link to="/signup">Signup</Link>
-          </li>
-          <li className="nav-menu">
-            <Link to="/mypage">My Page</Link>
-          </li>
+          {isLoggedIn ? (
+            <>
+              <li className="nav-menu">
+                <Link to="/mypage">My Page</Link>
+              </li>
+              <li className="nav-menu">
+                <Link to="/citychoose">여행지</Link>
+              </li>
+              <li className="nav-menu">
+                <button onClick={handleLogout} className="logout-button">
+                  Logout
+                </button>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="nav-menu">
+                <Link to="/login">Login</Link>
+              </li>
+              <li className="nav-menu">
+                <Link to="/signup">Signup</Link>
+              </li>
+            </>
+          )}
         </div>
       </ul>
     </nav>
