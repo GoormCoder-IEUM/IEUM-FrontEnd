@@ -3,11 +3,11 @@ import { useLocation } from "react-router-dom";
 import "../style/Schedule.css";
 import SetDate from "../sidebar/SetDate";
 import SetPlace from "../sidebar/SetPlace";
-import SetAccommodation from "../sidebar/SetAccommodation";
+import SetDetail from "../sidebar/SetDetail";
 import DateChooseModal from "../modal/DateChooseModal";
 import InviteMemberModal from "../modal/InviteMemberModal";
 import KakaoMap from "./KakaoMap";
-import axios from "axios";
+import { axiosInstance } from "../axiosinstance/Axiosinstance";
 
 const Schedule = () => {
   const [activeStep, setActiveStep] = useState("STEP 1");
@@ -59,12 +59,12 @@ const Schedule = () => {
   const renderComponent = (step) => {
     switch (step) {
       case "STEP 1":
-        return <SetDate selectedDates={selectedDates} krName={krName} />;
+        return <SetDate selectedDates={selectedDates} krName={krName} planId={planId} fetchPlanData={fetchPlanData} />;
       case "STEP 2":
         return <SetPlace selectedDates={selectedDates} krName={krName}
-        destinationId={destinationId} planId={planId} selectedPlace={selectedPlace} />;
-        case "STEP 3":
-        return <SetAccommodation selectedDates={selectedDates} />;
+          destinationId={destinationId} planId={planId} selectedPlace={selectedPlace} />;
+      case "STEP 3":
+        return <SetDetail planId={planId} selectedDates={selectedDates} />;
       default:
         return null;
     }
@@ -79,81 +79,46 @@ const Schedule = () => {
     return `${year}-${month}-${day}`;
   };
 
-const fetchPlanData = async () => {
-  const token = localStorage.getItem("token");
-  const refreshToken = localStorage.getItem("refreshToken");
-  try {
-    const response = await axios.get(`http://localhost:8080/plans/${planId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const fetchPlanData = async () => {
+    try {
+      const token = localStorage.getItem("token"); 
 
-    const startDate = new Date(response.data.startedAt).toISOString().split('T')[0];
-    const endDate = new Date(response.data.endedAt).toISOString().split('T')[0];
-    
-    setStartDate(startDate);
-    setEndDate(endDate);
-    
-    const selectedDates = `${startDate} ~ ${endDate}`;
-    setSelectedDates(selectedDates);
-    console.log("selectedDates ", selectedDates);
+      const response = await axiosInstance.get(`/plans/${planId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    setKrName(response.data.destinationKrName);
-  } catch (error) {
-    if (error.response && error.response.status === 500) {
-        console.warn("Access token expired, attempting refresh...");
+      const startDate = new Date(response.data.startedAt).toISOString().split('T')[0];
+      const endDate = new Date(response.data.endedAt).toISOString().split('T')[0];
 
-        try {
-            console.log("refreshToken", refreshToken);
-            const refreshResponse = await axios.post("http://localhost:8080/auth/refresh", {
-                refreshToken: refreshToken
-            });
+      setStartDate(startDate);
+      setEndDate(endDate);
 
-            const newAccessToken = refreshResponse.data;
-            localStorage.setItem("token", newAccessToken);
+      const selectedDates = `${startDate} ~ ${endDate}`;
+      setSelectedDates(selectedDates);
+      console.log("selectedDates ", selectedDates);
 
-            const retryResponse = await axios.get(`http://localhost:8080/plans/${planId}`, {
-              headers: {
-                Authorization: `Bearer ${newAccessToken}`,
-              },
-            });
-        
-            const startDate = new Date(retryResponse.data.startedAt).toISOString().split('T')[0];
-            const endDate = new Date(retryResponse.data.endedAt).toISOString().split('T')[0];
-            
-            setStartDate(startDate);
-            setEndDate(endDate);
-            
-            const selectedDates = `${startDate} ~ ${endDate}`;
-            setSelectedDates(selectedDates);
-            console.log("selectedDates ", selectedDates);
-        
-            setKrName(retryResponse.data.destinationKrName);
-        } catch (refreshError) {
-            console.error("토큰 갱신 중 오류 발생:", refreshError);
-        }
-    } else {
-        console.error("요청 중 오류 발생:", error);
+      setKrName(response.data.destinationKrName);
+    } catch (error) {
+      console.error("요청 중 오류 발생:", error);
     }
-}
-};
-
+  };
 
   return (
     <div className="container">
-      <DateChooseModal 
-        show={showDateChooseModal} 
-        onClose={closeDateChooseModal} 
-        setSelectedDates={setSelectedDates} 
-        destinationId={destinationId} 
-        setPlanId={setPlanId} // Pass setPlanId to DateChooseModal
+      <DateChooseModal
+        show={showDateChooseModal}
+        onClose={closeDateChooseModal}
+        setSelectedDates={setSelectedDates}
+        destinationId={destinationId}
+        setPlanId={setPlanId}
         formatDate={formatDate}
       />
-      <InviteMemberModal 
-        show={showInviteMemberModal} 
-        onClose={closeInviteMemberModal} 
-        planId={planId} // Pass planId to InviteMemberModal
+      <InviteMemberModal
+        show={showInviteMemberModal}
+        onClose={closeInviteMemberModal}
+        planId={planId}
       />
       <div className="sidebar-container">
         <div className="sidebar">
@@ -167,7 +132,7 @@ const fetchPlanData = async () => {
           </div>
           <div className="sidebar-detail" onClick={() => handleSetActiveStep("STEP 3")}>
             <div>STEP 3</div>
-            <div>숙소 선택</div>
+            <div>시간 선택</div>
           </div>
         </div>
       </div>
