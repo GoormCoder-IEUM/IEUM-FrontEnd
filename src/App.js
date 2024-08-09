@@ -14,6 +14,7 @@ import FinalData from "./pages/FinalData";
 import KakaoMap from "./pages/KakaoMap";
 import Chat from "./pages/Chat";
 import KakaoLogin from "./pages/KakaoLogin";
+import Citychoose from "./pages/citychoose";
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
         <Route path="/select-destination" element={<SelectDestination />} />
         <Route path="/select-accommodation" element={<SelectAccommodation />} />
         <Route path="/finaldata" element={<FinalData />} />
+        <Route path="/citychoose" element={<Citychoose/>}/>
       </Routes>
     </Router>
   );
