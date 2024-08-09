@@ -88,6 +88,14 @@ const MyPage = () => {
         }
     };
 
+    const calculateDDay = (startDate) => {
+        const now = new Date();
+        const start = new Date(startDate);
+        const diffTime = start - now;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays >= 0 ? `D-${diffDays}` : `D+${Math.abs(diffDays)}`;
+    };
+
     const openEditModal = () => {
         setFormData({
             name: memberInfo.name,
@@ -270,6 +278,7 @@ const MyPage = () => {
                                         <div>목적지: {schedule.destinationName}</div>
                                         <div>시작일: {new Date(schedule.startedAt).toLocaleDateString()}</div>
                                         <div>종료일: {new Date(schedule.endedAt).toLocaleDateString()}</div>
+                                        <div>D-Day: {calculateDDay(schedule.startedAt)}</div>
                                         <div>교통수단: {schedule.vehicle}</div>
                                         <button onClick={() => handleEditPlan(schedule)}>일정 확인</button>
                                     </div>
