@@ -35,6 +35,7 @@ const MyPage = () => {
     });
     const [invitations, setInvitations] = useState([]);
     const [weatherData, setWeatherData] = useState({});
+    const [weatherVisible, setWeatherVisible] = useState({}); // 날씨 정보 표시 상태 관리 추가
     const navigate = useNavigate();
 
     const weatherIcons = {
@@ -166,6 +167,13 @@ const MyPage = () => {
         } catch (error) {
             console.error("날씨 정보를 가져오는 중 오류 발생:", error);
         }
+    };
+
+    const toggleWeatherVisibility = (destinationName) => {
+        setWeatherVisible(prevState => ({
+            ...prevState,
+            [destinationName]: !prevState[destinationName],
+        }));
     };
 
     const openEditModal = () => {
@@ -413,11 +421,17 @@ const MyPage = () => {
                                         <div>시작일: {new Date(schedule.startedAt).toLocaleDateString()}</div>
                                         <div>종료일: {new Date(schedule.endedAt).toLocaleDateString()}</div>
                                         <div>교통수단: {schedule.vehicle === "OWN_CAR" ? "자가용" : "대중교통"}</div>
-                                        <div className="plan-wrap">
                                             {calculateDDay(schedule.startedAt).startsWith('D-') && parseInt(calculateDDay(schedule.startedAt).split('-')[1]) <= 5 && (
-                                                <button onClick={() => fetchWeather(schedule.destinationName, schedule.startedAt, schedule.endedAt)}>⛅날씨 정보 조회</button>
+                                                <button onClick={() => {
+                                                    toggleWeatherVisibility(schedule.destinationName);
+                                                    if (!weatherVisible[schedule.destinationName]) {
+                                                        fetchWeather(schedule.destinationName, schedule.startedAt, schedule.endedAt);
+                                                    }
+                                                }}>
+                                                    {weatherVisible[schedule.destinationName] ? "⛅ 날씨 정보 숨기기" : "⛅ 날씨 정보 조회"}
+                                                </button>
                                             )}
-                                            {weatherData[schedule.destinationName] && Object.keys(weatherData[schedule.destinationName]).length > 0 && (
+                                            {weatherVisible[schedule.destinationName] && weatherData[schedule.destinationName] && Object.keys(weatherData[schedule.destinationName]).length > 0 && (
                                                 <div className="weather-container">
                                                     {Object.entries(weatherData[schedule.destinationName]).map(([date, weathers], index) => (
                                                         <div key={index} className="weather-day">
@@ -436,12 +450,13 @@ const MyPage = () => {
                                                     ))}
                                                 </div>
                                             )}
+                                        <div className="plan-wrap">
                                             <button onClick={() => handleEditPlan(schedule)}>✏️&nbsp;일정 수정하기</button>
-                                            <button onClick={() => openInviteMemberModal(schedule)}>📭멤버 초대하기</button>
+                                            <button onClick={() => openInviteMemberModal(schedule)}>📭&nbsp;멤버 초대하기</button>
                                         </div>
                                         <div className="plan-wrap result">
-                                            <button onClick={() => openPlanResultModal(schedule)}>📘일정 확인</button>
-                                            <button onClick={() => handleFinalize(schedule)}>✅일정 확정하기</button>
+                                            <button onClick={() => openPlanResultModal(schedule)}>📘&nbsp;일정 확인</button>
+                                            <button onClick={() => handleFinalize(schedule)}>✅&nbsp;일정 확정하기</button>
                                         </div>
                                     </div>
                                 ))
