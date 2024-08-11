@@ -9,6 +9,8 @@ import UserEditModal from "../modal/UserEditModal";
 import PasswordChangeModal from "../modal/PasswordChangeModal";
 import ReceivedInvitationsModal from "../modal/ReceivedInvitationsModal";
 import { useNavigate } from "react-router-dom";
+import InviteMemberModal from "../modal/InviteMemberModal";
+import PlanResultModal from "../modal/PlanResultModal";
 
 const MyPage = () => {
     const [activeTab, setActiveTab] = useState("일정");
@@ -18,6 +20,10 @@ const MyPage = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
     const [isInvitationsModalOpen, setIsInvitationsModalOpen] = useState(false);
+    const [PlanIdForModal, setPlanIdForModal] = useState(false);
+    const [isInviteMemberModalOpen, setisInviteMemberModalOpen] = useState(false);
+    const [isPlanResultModalOpen, setisPlanResultModalOpen] = useState(false);
+    const [hasFetchSchedules, sethasFetchSchedules] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         gender: "",
@@ -69,6 +75,12 @@ const MyPage = () => {
             }
         };
 
+        fetchMemberInfo();
+        const token = localStorage.getItem('token');
+        console.log(token);
+    }, []);
+
+    useEffect(() => {
         const fetchSchedules = async () => {
             const token = localStorage.getItem("token");
             try {
@@ -79,6 +91,7 @@ const MyPage = () => {
                     },
                 });
                 console.log("전체 일정 조회 :", response);
+
                 const formattedEvents = response.data.map((schedule) => ({
                     title: schedule.destinationName,
                     start: schedule.startedAt,
@@ -89,16 +102,15 @@ const MyPage = () => {
                 }));
                 setSchedules(response.data);
                 setEvents(formattedEvents);
+                sethasFetchSchedules(true);
             } catch (error) {
                 console.error("요청 중 오류 발생:", error);
             }
         };
 
-        fetchMemberInfo();
+
         fetchSchedules();
-        const token = localStorage.getItem('token');
-        console.log(token);
-    }, []);
+    }, [hasFetchSchedules]);
 
     const handleDateClick = (arg) => {
         const title = prompt("Enter event title:");
@@ -223,6 +235,7 @@ const MyPage = () => {
                 prevInvitations.filter((invitation) => invitation.planId !== planId)
             );
             console.log(response.data);
+            sethasFetchSchedules(false);
         } catch (error) {
             console.error("요청 중 오류 발생:", error);
         }
@@ -295,6 +308,49 @@ const MyPage = () => {
     }
 
 
+    const openInviteMemberModal = (schedule) => {
+        setisInviteMemberModalOpen(true);
+        setPlanIdForModal(schedule.id);
+    };
+
+    const closeInviteMemberModal = () => {
+        setisInviteMemberModalOpen(false);
+    };
+
+    const openPlanResultModal = (schedule) => {
+        setisPlanResultModalOpen(true);
+        setPlanIdForModal(schedule.id);
+
+    };
+
+    const closePlanResultModal = () => {
+        setisPlanResultModalOpen(false);
+    };
+
+    // 일정 확정
+    const handleFinalize = (schedule) => {
+
+        const planId = schedule.id
+
+        const fetchFinalize = async () => {
+            const token = localStorage.getItem("token");
+            try {
+                const response = await axiosInstance.post(`/plans/${planId}/finalize`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+
+                console.log("일정 확정 응답", response);
+
+            } catch (error) {
+                console.error("요청 중 오류 발생:", error);
+            }
+        };
+
+        fetchFinalize();
+    };
+
     // fullcalendar 커스터마이징
     const renderEventContent = (eventInfo) => {
         const startTime = new Date(eventInfo.event.start).toLocaleTimeString('ko-KR', {
@@ -318,6 +374,7 @@ const MyPage = () => {
                 {memberInfo ? (
                     <>
                         <div className="profile-item">이름: {memberInfo.name}</div>
+                        <div className="profile-item">이메일: {memberInfo.email}</div>
                         <div className="profile-item">생일: {new Date(memberInfo.birth).toLocaleDateString()}</div>
                         <div className="profile-item">가입일: {new Date(memberInfo.createdAt).toLocaleDateString()}</div>
                     </>
@@ -349,34 +406,43 @@ const MyPage = () => {
                             {schedules.length > 0 ? (
                                 schedules.map((schedule) => (
                                     <div key={schedule.id} className="schedule-item">
-                                        <div>목적지: {schedule.destinationName}</div>
+                                        <div className="wrap-for-dday">
+                                            <div>목적지: {schedule.destinationName}</div>
+                                            <div className="d-day">⏰{calculateDDay(schedule.startedAt)}</div>
+                                        </div>
                                         <div>시작일: {new Date(schedule.startedAt).toLocaleDateString()}</div>
                                         <div>종료일: {new Date(schedule.endedAt).toLocaleDateString()}</div>
                                         <div>교통수단: {schedule.vehicle === "OWN_CAR" ? "자가용" : "대중교통"}</div>
-                                        <div>D-Day: {calculateDDay(schedule.startedAt)}</div>
-                                        {calculateDDay(schedule.startedAt).startsWith('D-') && parseInt(calculateDDay(schedule.startedAt).split('-')[1]) <= 5 && (
-                                            <button onClick={() => fetchWeather(schedule.destinationName, schedule.startedAt, schedule.endedAt)}>날씨 정보 조회</button>
-                                        )}
-                                        {weatherData[schedule.destinationName] && Object.keys(weatherData[schedule.destinationName]).length > 0 && (
-                                            <div className="weather-container">
-                                                {Object.entries(weatherData[schedule.destinationName]).map(([date, weathers], index) => (
-                                                    <div key={index} className="weather-day">
-                                                        <div>{date}</div>
-                                                        {weathers.map((weather, i) => (
-                                                            <div key={i} className="weather-card">
-                                                                <div className="weather-time">{new Date(weather.dateTime).getHours()}:00</div>
-                                                                <div className="weather-icon">{getWeatherIcon(weather.weatherDescription)}</div>
-                                                                <div className="weather-temperature">
-                                                                    <span className="high-temp">{weather.temperature}°C</span>
+                                        <div className="plan-wrap">
+                                            {calculateDDay(schedule.startedAt).startsWith('D-') && parseInt(calculateDDay(schedule.startedAt).split('-')[1]) <= 5 && (
+                                                <button onClick={() => fetchWeather(schedule.destinationName, schedule.startedAt, schedule.endedAt)}>⛅날씨 정보 조회</button>
+                                            )}
+                                            {weatherData[schedule.destinationName] && Object.keys(weatherData[schedule.destinationName]).length > 0 && (
+                                                <div className="weather-container">
+                                                    {Object.entries(weatherData[schedule.destinationName]).map(([date, weathers], index) => (
+                                                        <div key={index} className="weather-day">
+                                                            <div>{date}</div>
+                                                            {weathers.map((weather, i) => (
+                                                                <div key={i} className="weather-card">
+                                                                    <div className="weather-time">{new Date(weather.dateTime).getHours()}:00</div>
+                                                                    <div className="weather-icon">{getWeatherIcon(weather.weatherDescription)}</div>
+                                                                    <div className="weather-temperature">
+                                                                        <span className="high-temp">{weather.temperature}°C</span>
+                                                                    </div>
+                                                                    <div className="weather-humidity">💧{weather.humidity}%</div>
                                                                 </div>
-                                                                <div className="weather-humidity">💧{weather.humidity}%</div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                        <button onClick={() => handleEditPlan(schedule)}>일정 확인</button>
+                                                            ))}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            <button onClick={() => handleEditPlan(schedule)}>✏️&nbsp;일정 수정하기</button>
+                                            <button onClick={() => openInviteMemberModal(schedule)}>📭멤버 초대하기</button>
+                                        </div>
+                                        <div className="plan-wrap result">
+                                            <button onClick={() => openPlanResultModal(schedule)}>📘일정 확인</button>
+                                            <button onClick={() => handleFinalize(schedule)}>✅일정 확정하기</button>
+                                        </div>
                                     </div>
                                 ))
                             ) : (
@@ -420,6 +486,18 @@ const MyPage = () => {
                 onClose={closeInvitationsModal}
                 invitations={invitations}
                 onAccept={handleAccept}
+            />
+
+            <InviteMemberModal
+                show={isInviteMemberModalOpen}
+                onClose={closeInviteMemberModal}
+                planId={PlanIdForModal}
+            />
+
+            <PlanResultModal
+                show={isPlanResultModalOpen}
+                onClose={closePlanResultModal}
+                planId={PlanIdForModal}
             />
         </div>
     );
