@@ -113,3 +113,7 @@
     height: 85%;
     overflow-y: auto;
 }
+
+.map-search-result ul li{
+    cursor: pointer;
+}

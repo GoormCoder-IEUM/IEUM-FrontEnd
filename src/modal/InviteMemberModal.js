@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { axiosInstance } from "../axiosinstance/Axiosinstance";
 import "../style/InviteMemberModal.css";
 
@@ -7,6 +7,16 @@ const InviteMemberModal = ({ show, onClose, planId }) => {
     const [searchResults, setSearchResults] = useState([]);
     const [addedUsers, setAddedUsers] = useState([]);
     const [error, setError] = useState(null);
+
+    useEffect (() => {
+        if (show) {
+            setKeyword("");
+            setSearchResults([]);
+            setAddedUsers([]);
+            setError(null);
+        }
+        console.log("초대창일정아이디", planId);
+    }, [show, planId])
 
     if (!show) {
         return null;
@@ -52,6 +62,7 @@ const InviteMemberModal = ({ show, onClose, planId }) => {
         }
     };
 
+
     return (
         <div className="invitemembermodal">
             <div className="invitemembermodal-content">
@@ -86,7 +97,7 @@ const InviteMemberModal = ({ show, onClose, planId }) => {
                     {addedUsers.length > 0 && (
                         <ul>
                             {addedUsers.map((user) => (
-                                <li key={user.id}>{user.name}</li>
+                                <li key={user.id} data-aos="zoom-in">{user.name}</li>
                             ))}
                         </ul>
                     )}

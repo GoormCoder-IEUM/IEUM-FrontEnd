@@ -1,51 +1,80 @@
-.login-container {
+.auth-container {
   max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 50px auto;
+  padding: 30px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 10px;
   background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.login-container h2 {
+.auth-container h2 {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  color: #5fb1aa;
+  font-size: 24px;
+  font-weight: 600;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
-.login-container label {
+.auth-container label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
 }
 
-.login-container input {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
-}
-
-.login-container form button {
+.auth-container input {
   width: 100%;
   padding: 10px;
-  background-color: #4CAF50;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.auth-container input:focus {
+  border-color: #5fb1aa;
+  outline: none;
+  box-shadow: 0 0 5px rgba(95, 177, 170, 0.5);
+}
+
+.auth-container form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #5fb1aa;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
 }
 
-.login-container form button:hover {
+.auth-container form button:hover {
   background-color: #73d878;
 }
 
 .kakao-btn {
-  margin: 5px 0 0 0;
+  margin: 20px 0 0 0;
   background: url('/public/assets/kakao_login_medium_narrow.png') no-repeat center center;
+  background-size: contain;
   width: 100%;
-  height: 45px;
+  height: 50px;
   border: none;
   cursor: pointer;
+}
+
+.error-message {
+  color: red;
+  margin-top: 15px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
 }

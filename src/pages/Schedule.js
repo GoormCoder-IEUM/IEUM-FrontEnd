@@ -11,11 +11,13 @@ import { axiosInstance } from "../axiosinstance/Axiosinstance";
 import Chat from "./Chat";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import { PlanResult } from "../sidebar/PlanResult";
 
 const Schedule = () => {
   const [activeStep, setActiveStep] = useState("STEP 1");
   const [showDateChooseModal, setShowDateChooseModal] = useState(true);
   const [showInviteMemberModal, setShowInviteMemberModal] = useState(false);
+  const [hasDateChange, setHasDateChange] = useState(false);
   const [selectedDates, setSelectedDates] = useState("");
   const [planId, setPlanId] = useState(null);
   const location = useLocation();
@@ -32,17 +34,17 @@ const Schedule = () => {
   };
 
   useEffect(() => {
-    if (krName === undefined) {
+    if (planIdForState) {
       setShowDateChooseModal(false);
-      console.log("planIdForState ", planIdForState);
+      console.log("planIdForState before setting planId: ", planIdForState);
       setPlanId(planIdForState);
     }
-  }, []);
+  }, [planIdForState]);
+
 
   useEffect(() => {
     if (planId !== null) {
       console.log("set plan id : ", planId);
-      fetchPlanData();
     }
   }, [planId]);
 
@@ -62,12 +64,14 @@ const Schedule = () => {
   const renderComponent = (step) => {
     switch (step) {
       case "STEP 1":
-        return <SetDate selectedDates={selectedDates} krName={krName} planId={planId} fetchPlanData={fetchPlanData} />;
+        return <SetDate selectedDates={selectedDates} krName={krName} planId={planId} fetchPlanData={fetchPlanData} setHasDateChange={setHasDateChange} />;
       case "STEP 2":
         return <SetPlace selectedDates={selectedDates} krName={krName}
           destinationId={destinationId} planId={planId} selectedPlace={selectedPlace} />;
       case "STEP 3":
         return <SetDetail planId={planId} selectedDates={selectedDates} />;
+      case "STEP 4":
+        return <PlanResult planId={planId} selectedDates={selectedDates} />;
       default:
         return null;
     }
@@ -82,9 +86,12 @@ const Schedule = () => {
     return `${year}-${month}-${day}`;
   };
 
+
   const fetchPlanData = async () => {
+    if (!planId)
+      return;
     try {
-      const token = localStorage.getItem("token"); 
+      const token = localStorage.getItem("token");
 
       const response = await axiosInstance.get(`/plans/${planId}`, {
         headers: {
@@ -101,12 +108,16 @@ const Schedule = () => {
       const selectedDates = `${startDate} ~ ${endDate}`;
       setSelectedDates(selectedDates);
       console.log("selectedDates ", selectedDates);
-
+      setHasDateChange(true);
       setKrName(response.data.destinationKrName);
     } catch (error) {
       console.error("요청 중 오류 발생:", error);
     }
   };
+
+  useEffect(() => {
+    fetchPlanData();
+  }, [hasDateChange, planId])
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -125,7 +136,7 @@ const Schedule = () => {
           planId={planId}
         />
         <div className="sidebar-container">
-        <div className="sidebar">
+          <div className="sidebar">
             <div
               className={`sidebar-detail ${activeStep === "STEP 1" ? "active" : ""}`}
               onClick={() => handleSetActiveStep("STEP 1")}
@@ -147,12 +158,19 @@ const Schedule = () => {
               <div>STEP 3</div>
               <div>시간 선택</div>
             </div>
+            <div
+              className={`sidebar-detail ${activeStep === "STEP 4" ? "active" : ""}`}
+              onClick={() => handleSetActiveStep("STEP 4")}
+            >
+              <div>STEP 4</div>
+              <div>일정 확인</div>
+            </div>
           </div>
         </div>
         <div className="content-container">
           {renderComponent(activeStep)}
         </div>
-        <KakaoMap onPlaceSelect={onPlaceSelect} />
+        {activeStep !== "STEP 4" && <KakaoMap onPlaceSelect={onPlaceSelect} />}
         <Chat planId={planId} />
       </div>
     </DndProvider>

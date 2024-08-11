@@ -4,7 +4,6 @@
     height: 100%;
 }
 
-
 .step2-container h2 {
     text-align: center;
 }
@@ -20,6 +19,19 @@
 .place-container p {
     display: flex;
     justify-content: center;
+}
+
+.info-section div {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.places-list {
+    max-height: 600px;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
 }
 
 .add-place-form {
@@ -44,7 +56,6 @@
     border-color: #5fb1aa;
     outline: none;
 }
-
 
 .add-place-form select {
     width: 100%;
@@ -75,6 +86,7 @@
     border-radius: 5px;
     font-size: 1rem;
     min-width: 60px;
+    height: 35px;
 }
 
 .step2-container .add-btn {
@@ -118,7 +130,6 @@
 }
 
 .place-item-container {
-    border-bottom: 1px solid #0000001e;
     display: flex;
     align-items: center;
     justify-content: space-between;

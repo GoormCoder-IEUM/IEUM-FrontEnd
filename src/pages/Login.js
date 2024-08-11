@@ -10,16 +10,13 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  // 카카오 로그인
-  const Rest_api_key = '57d8ed74ba0df4a9a24520ab381936d7' //REST API KEY
-  const redirect_uri = 'http://localhost:3000/kakaologin' //Redirect URI
-  // oauth 요청 URL
-  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${Rest_api_key}&redirect_uri=${redirect_uri}&response_type=code`
-  
-  
+  const Rest_api_key = '57d8ed74ba0df4a9a24520ab381936d7'; 
+  const redirect_uri = 'http://localhost:3000/kakaologin'; 
+  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${Rest_api_key}&redirect_uri=${redirect_uri}&response_type=code`;
+
   const handleKakaoLogin = () => {
-    window.location.href = kakaoURL
-  }
+    window.location.href = kakaoURL;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,22 +34,23 @@ const Login = () => {
         },
       });
 
-      console.log("Login successful", response.data);
-      localStorage.setItem("token", response.data.accessToken);
-      localStorage.setItem("refreshToken", response.data.refreshToken);
-      console.log("토큰", response.data.accessToken);
-      console.log("리프레시토큰", response.data.refreshToken);
+      if (response.status === 200) {
+        console.log("Login successful", response.data);
+        localStorage.setItem("token", response.data.accessToken);
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+        navigate('/');
+      } else {
+        setError("Login failed. Please check your credentials and try again.");
+      }
     } catch (error) {
       console.error("Error during login:", error);
       setError("Login failed. Please check your credentials and try again.");
     }
-
-    navigate('/');
   };
 
   return (
-    <div className="login-container">
-      <h2>Login Page</h2>
+    <div className="auth-container">
+      <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="loginId">ID:</label>
@@ -77,9 +75,7 @@ const Login = () => {
         {error && <div className="error-message">{error}</div>}
         <button type="submit">Login</button>
       </form>
-
       <button className="kakao-btn" onClick={handleKakaoLogin}></button>
-
     </div>
   );
 };

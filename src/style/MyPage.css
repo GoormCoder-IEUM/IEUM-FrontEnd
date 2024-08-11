@@ -95,7 +95,7 @@
 }
 
 .schedule {
-  width: 95%;
+  width: 97%;
   background-color: #f0f0f0;
   border-radius: 10px;
   padding: 20px;
@@ -162,47 +162,87 @@
 .mypage-container .fc .fc-button:disabled {
   opacity: 1;
 }
-  .weather-container {
-    display: flex;
-    justify-content: space-around;
-    margin: 20px;
+
+.weather-container {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px;
 }
 
 .weather-card {
-    background-color: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-    text-align: center;
-    width: 80px;
-    font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  text-align: center;
+  width: 80px;
+  font-family: Arial, sans-serif;
 }
 
 .weather-day {
-    font-size: 14px;
-    margin-bottom: 5px;
-    color: #555;
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #555;
 }
 
 .weather-icon {
-    font-size: 24px;
-    margin-bottom: 5px;
+  font-size: 24px;
+  margin-bottom: 5px;
 }
 
 .weather-temperature {
-    font-size: 18px;
-    margin-bottom: 5px;
+  font-size: 18px;
+  margin-bottom: 5px;
 }
 
 .high-temp {
-    color: red;
+  color: red;
 }
 
 .low-temp {
-    color: blue;
+  color: blue;
 }
 
 .weather-humidity {
-    font-size: 14px;
-    color: #00aaff;
+  font-size: 14px;
+  color: #00aaff;
+}
+
+.plan-wrap {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 0 !important;
+}
+
+.plan-wrap.result button {
+  background-color: #86b3ae;
+}
+
+.plan-wrap.result button:hover {
+  background-color: #5a7975;
+}
+
+.wrap-for-dday {
+  display: flex;
+  justify-content: space-between;
+
+}
+
+.wrap-for-dday {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.d-day {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 5px 10px;
+  font-weight: bold;
+  font-size: 1.5rem !important;
+  border-radius: 8px;
+  z-index: 10;
 }
