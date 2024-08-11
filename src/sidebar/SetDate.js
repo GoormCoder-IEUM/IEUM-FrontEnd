@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../style/SetDate.css";
 import { axiosInstance } from "../axiosinstance/Axiosinstance";
 
-const SetDate = ({ selectedDates, krName, planId, fetchPlanData }) => {
+const SetDate = ({ selectedDates, krName, planId, fetchPlanData, setHasDateChange }) => {
   const [editTime, setEditTime] = useState("");
   const [isStartTime, setIsStartTime] = useState(true);
   const [showModalMessage, setShowModalMessage] = useState("");
@@ -48,6 +48,7 @@ const SetDate = ({ selectedDates, krName, planId, fetchPlanData }) => {
       );
       console.log("Response:", response.data);
       fetchPlanData(planId);
+      setHasDateChange(false);
     } catch (error) {
       console.error(
         isStartTime ? "Error updating start time:" : "Error updating end time:",

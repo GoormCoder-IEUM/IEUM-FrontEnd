@@ -8,13 +8,14 @@ const Signup = () => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [birthdate, setBirthdate] = useState("");
+  const [email, setEmail] = useState("");
   const [gender, setGender] = useState("");
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
   const handleBirthDate = (e) => {
-    setBirthdate(e.target.value)
+    setBirthdate(e.target.value);
     e.target.blur();
   };
 
@@ -27,6 +28,7 @@ const Signup = () => {
       name,
       password,
       birth: birthdate,
+      email,
       gender
     };
 
@@ -36,26 +38,22 @@ const Signup = () => {
           "Content-Type": "application/json",
         },
       });
-      console.log("회원정보: ", userData);
 
       if (response.status === 200 || response.status === 201) {
         console.log("Signup successful");
+        navigate('/login');
       } else {
-        console.error("Signup failed");
+        setError("Signup failed. Please check your details and try again.");
       }
     } catch (error) {
       console.error("Error during signup:", error);
       setError("Signup failed. Please check your details and try again.");
-      console.log("회원정보: ", userData);
     }
-
-
-    navigate('/login');
   };
 
   return (
-    <div className="signup-container">
-      <h2>Signup Page</h2>
+    <div className="auth-container">
+      <h2>Signup</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="username">Username:</label>
@@ -98,6 +96,15 @@ const Signup = () => {
           />
         </div>
         <div className="form-group">
+          <label htmlFor="email">Email:</label>
+          <input
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className="form-group">
           <label htmlFor="gender">Gender:</label>
           <select
             id="gender"
@@ -105,9 +112,10 @@ const Signup = () => {
             onChange={(e) => setGender(e.target.value)}
             required
           >
+
             <option value="">Select Gender</option>
-            <option value="MALE">Male</option>
-            <option value="FEMALE">Female</option>
+            <option value="MALE">남자</option>
+            <option value="FEMALE">여자</option>
           </select>
         </div>
         {error && <div className="error-message">{error}</div>}

@@ -67,11 +67,11 @@ const SetDetail = ({ planId, selectedDates }) => {
         setHasFetchedSharedPlaces(false);
         console.log(day);
     }, [day]);
-    
+
     const handleDayChange = (event) => {
         setDay(event.target.value);
     };
-    
+
 
     // 삭제 요청
     const handleDeletePlace = async (placeId) => {
@@ -189,13 +189,14 @@ const SetDetail = ({ planId, selectedDates }) => {
             <div className="detail-container">
                 <div className="detail-container-info">
                     <h2>일정 상세 설정</h2>
-                    <p>등록한 장소들의 방문 시기를 설정합니다.</p>
+                    {selectedDates && <p>선택된 날짜: {selectedDates}</p>}
                     <div className="info-section">
                         <button onClick={toggleInfoVisibility} className="toggle-info-btn">
                             {isInfoVisible ? "접기" : "펼치기"}
                         </button>
                         {isInfoVisible && (
                             <div>
+                                <div>등록한 장소들의 방문 시기를 설정합니다.</div>
                                 <div>장소를 <strong>클릭</strong>하면 방문시간을 설정합니다.</div>
                                 <br />
                                 <div>명소인 경우 <strong className="place-item-category-1">색상</strong>으로 표기됩니다.</div>
@@ -210,16 +211,18 @@ const SetDetail = ({ planId, selectedDates }) => {
                     {sharedPlace.map((place) => (
                         <div key={place.id} className="place-item-container">
                             <div className="place-item" onClick={() => handlePlaceClick(place)}>
-                                <h3 className={`place-item-category-${place.categoryId}`}>{place.placeName}</h3>
-                                <p>{place.address}</p>
-                                <p>{formatDate(place.startedAt)}~{formatDate(place.endedAt)}</p>
+                                <div className="place-item-content">
+                                    <h3 className={`place-item-category-${place.categoryId}`}>{place.placeName}</h3>
+                                    <p>{place.address}</p>
+                                    <p>{formatDate(place.startedAt)}~{formatDate(place.endedAt)}</p>
+                                </div>
+                                <button className="delete-btn" onClick={() => handleDeletePlace(place.id)}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px">
+                                        <path d="M0 0h24v24H0V0z" fill="none" />
+                                        <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z" />
+                                    </svg>
+                                </button>
                             </div>
-                            <button className="delete-btn" onClick={() => handleDeletePlace(place.id)}>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px">
-                                    <path d="M0 0h24v24H0V0z" fill="none" />
-                                    <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z" />
-                                </svg>
-                            </button>
                         </div>
                     ))}
                 </div>
@@ -238,9 +241,11 @@ const SetDetail = ({ planId, selectedDates }) => {
                         {dailyPlaces.map((place) => (
                             <div key={place.id} className="place-item-container">
                                 <div className="place-item">
+                                    <div className="place-item-content">
                                     <h3 className={`place-item-category-${place.categoryId}`}>{place.placeName}</h3>
                                     <p>{place.address}</p>
                                     <p>{formatDate(place.startedAt)}~{formatDate(place.endedAt)}</p>
+                                    </div>
                                 </div>
                             </div>
                         ))}

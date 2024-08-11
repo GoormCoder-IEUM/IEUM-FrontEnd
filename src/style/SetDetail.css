@@ -34,7 +34,7 @@
     justify-content: center;
 }
 
-.place-item-wrap {
+.detail-container .place-item-wrap {
     height: auto;
     max-height: 780px;
     overflow-y: auto;

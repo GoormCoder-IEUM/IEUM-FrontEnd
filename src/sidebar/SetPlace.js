@@ -2,13 +2,16 @@ import React, { useRef, useState, useEffect } from "react";
 import { axiosInstance } from '../axiosinstance/Axiosinstance';
 import { Client as StompClient } from '@stomp/stompjs';
 import "../style/SetPlace.css";
+import AOS from "aos";
 
 const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
     const [places, setPlaces] = useState([]);
     const [placeName, setPlaceName] = useState('');
     const [address, setAddress] = useState('');
     const [categoryId, setCategoryId] = useState(1);
+    const [isInfoVisible, setIsInfoVisible] = useState(true);
     const [hasFetchedPlaces, setHasFetchedPlaces] = useState(false);
+    const placeItemRefs = useRef([]);
 
     const stompClient = useRef(null);
     const [wsConnected, setWsConnected] = useState(false);
@@ -16,6 +19,33 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
     const [sharedPlace, setSharedPlace] = useState([]);
     const [showWsError, setShowWsError] = useState('');
     const [memberUUID, setMemberUUID] = useState('');
+
+    useEffect(() => {
+        AOS.init({ duration: 1000, once: true });
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('aos-animate');
+                    } else {
+                        entry.target.classList.remove('aos-animate');
+                    }
+                });
+            },
+            { root: document.querySelector('.place-item-wrap'), threshold: 0.1 }
+        );
+
+        placeItemRefs.current.forEach(item => {
+            if (item) observer.observe(item);
+        });
+
+        return () => {
+            placeItemRefs.current.forEach(item => {
+                if (item) observer.unobserve(item);
+            });
+        };
+    }, [places]);
 
     useEffect(() => {
         setPlaceName(selectedPlace.name);
@@ -39,9 +69,7 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
             }
         };
 
-        if (!hasFetchedPlaces) {
-            fetchPlaces();
-        }
+        fetchPlaces();
     }, [hasFetchedPlaces, planId]);
 
     const handleAddPlaceClick = async () => {
@@ -58,6 +86,7 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
 
             console.log("Add place response:", response.data);
             setHasFetchedPlaces(false);
+            console.log(hasFetchedPlaces);
         } catch (error) {
             console.error("요청 중 오류 발생:", error);
         }
@@ -237,11 +266,28 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
         console.log("업데이트된 사용자ID : ", memberUUID);
     }, [memberUUID]);
 
+    const toggleInfoVisibility = () => {
+        setIsInfoVisible(!isInfoVisible);
+    };
     return (
         <div className="step2-container">
             <div className="place-container">
                 <h2>여행 지역 : {krName} </h2>
                 {selectedDates && <p>선택된 날짜: {selectedDates}</p>}
+                <div className="info-section">
+                    <button onClick={toggleInfoVisibility} className="toggle-info-btn">
+                        {isInfoVisible ? "접기" : "펼치기"}
+                    </button>
+                    {isInfoVisible && (
+                        <div>
+                            <div>지도에서 방문 할 장소를 <storng>검색</storng>합니다.</div>
+                            <div>장소를 클릭하면 주소가 입력됩니다.</div>
+                            <div>추가를 클릭하면 장소가 추가합니다.</div>
+                            <div>공유를 클릭하면 일정에 장소가 등록됩니다.</div>
+                            <div>등록 된 장소는 실시간으로 업데이트 됩니다.</div>
+                        </div>
+                    )}
+                </div>
                 <div className={`custom-modal-message ${showWsError ? 'show' : ''}`}>
                     {showWsError}
                 </div>
@@ -249,10 +295,12 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
                     {places.map((place) => (
                         <div key={place.id} className="place-item-container">
                             <div className="place-item">
-                                <h3>{place.placeName}</h3>
-                                <p>{place.address}</p>
+                                <div className="place-item-content">
+                                    <h3>{place.placeName}</h3>
+                                    <p>{place.address}</p>
+                                </div>
+                                <button className="share-btn" onClick={() => publishMessage(place.id)}>공유</button>
                             </div>
-                            <button className="share-btn" onClick={() => publishMessage(place.id)}>공유</button>
                         </div>
                     ))}
                 </div>
@@ -285,17 +333,24 @@ const SetPlace = ({ selectedDates, krName, planId, selectedPlace }) => {
                 <h2>친구와 공유중인 장소</h2>
                 <div className="place-item-wrap">
                     {sharedPlace.map((msg, index) => (
-                        <div key={index} className="place-item-container" data-aos="fade-up">
+                        <div
+                            key={index}
+                            className="place-item-container"
+                            ref={el => placeItemRefs.current[index + places.length] = el}
+                            data-aos="fade-right"
+                        >
                             <div className="place-item">
-                                <h3>{msg.placeName}</h3>
-                                <p>{msg.address}</p>
+                                <div className="place-item-content">
+                                    <h3>{msg.placeName}</h3>
+                                    <p>{msg.address}</p>
+                                </div>
+                                <button className="delete-btn" onClick={() => handleDeletePlace(msg.id)}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px">
+                                        <path d="M0 0h24v24H0V0z" fill="none" />
+                                        <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z" />
+                                    </svg>
+                                </button>
                             </div>
-                            <button className="delete-btn" onClick={() => handleDeletePlace(msg.id)}>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px">
-                                    <path d="M0 0h24v24H0V0z" fill="none" />
-                                    <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-3.5l-1-1zM18 7H6v12c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7z" />
-                                </svg>
-                            </button>
                         </div>
                     ))}
                 </div>
