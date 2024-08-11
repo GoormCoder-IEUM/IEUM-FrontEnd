@@ -86,25 +86,34 @@ const Schedule = () => {
     return `${year}-${month}-${day}`;
   };
 
-
+  const utcToLocalDate = (utcDate) => {
+    const date = new Date(utcDate);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 +1
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+  
   const fetchPlanData = async () => {
-    if (!planId)
-      return;
+    if (!planId) return;
     try {
       const token = localStorage.getItem("token");
-
+  
       const response = await axiosInstance.get(`/plans/${planId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
-      const startDate = new Date(response.data.startedAt).toISOString().split('T')[0];
-      const endDate = new Date(response.data.endedAt).toISOString().split('T')[0];
-
+  
+      const startDateUTC = response.data.startedAt;
+      const endDateUTC = response.data.endedAt;
+  
+      const startDate = utcToLocalDate(startDateUTC); // UTC -> 로컬
+      const endDate = utcToLocalDate(endDateUTC); // UTC -> 로컬
+  
       setStartDate(startDate);
       setEndDate(endDate);
-
+  
       const selectedDates = `${startDate} ~ ${endDate}`;
       setSelectedDates(selectedDates);
       console.log("selectedDates ", selectedDates);
@@ -114,6 +123,7 @@ const Schedule = () => {
       console.error("요청 중 오류 발생:", error);
     }
   };
+  
 
   useEffect(() => {
     fetchPlanData();
