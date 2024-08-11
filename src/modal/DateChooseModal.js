@@ -74,12 +74,30 @@ const DateChooseModal = ({
         if (startDate && endDate && !isWrongDate()) {
             const token = localStorage.getItem("token");
 
+            // 한국 시간으로 변환하여 문자열로 저장
+            const formatToKST = (date) => {
+                const options = {
+                    timeZone: "Asia/Seoul",
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    hour12: false,
+                };
+                return new Date(date)
+                    .toLocaleString("sv-SE", options)
+                    .replace(" ", "T");
+            };
+
             const data = {
                 destinationId: destinationId,
-                startedAt: new Date(startDate).toISOString(),
-                endedAt: new Date(endDate).toISOString(),
+                startedAt: formatToKST(startDate),
+                endedAt: formatToKST(endDate),
                 vehicle: vehicle,
             };
+            console.log("요청 data", data);
 
             try {
                 const response = await axiosInstance.post("/plans", data, {
@@ -98,6 +116,7 @@ const DateChooseModal = ({
             }
         }
     };
+
 
     const isWrongDate = () => {
         return startDate && endDate && startDate > endDate;
