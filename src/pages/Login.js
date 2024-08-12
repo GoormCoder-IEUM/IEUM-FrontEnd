@@ -40,11 +40,11 @@ const Login = () => {
         localStorage.setItem("refreshToken", response.data.refreshToken);
         navigate('/');
       } else {
-        setError("Login failed. Please check your credentials and try again.");
+        setError("아이디와 비밀번호를 확인해주세요.");
       }
     } catch (error) {
       console.error("Error during login:", error);
-      setError("Login failed. Please check your credentials and try again.");
+      setError("아이디와 비밀번호를 확인해주세요.");
     }
   };
 
