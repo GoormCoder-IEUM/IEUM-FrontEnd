@@ -48,6 +48,9 @@ export const PlanResult = ({ planId }) => {
 
     return (
         <div className="plan-result-container">
+            <div className="plan-result-notice">
+                지금까지 생성한 일정의 상세내용 입니다. 마이페이지에서 다시 확인, 확정이 가능합니다.
+            </div>
             <div className="date-group-container">
                 {Object.keys(sharedPlace).map(date => (
                     <div key={date} className="date-group">
@@ -56,7 +59,7 @@ export const PlanResult = ({ planId }) => {
                             <React.Fragment key={place.id}>
                                 <div className="place-item-container">
                                     <div className="place-item">
-                                        <div className="place-item-content"> 
+                                        <div className="place-item-content">
                                             <h3 className={`place-item-category-${place.categoryId}`}>{place.placeName}</h3>
                                             <p>{place.address}</p>
                                             <p>{formatDate(place.startedAt)} ~ {formatDate(place.endedAt)}</p>
@@ -64,7 +67,7 @@ export const PlanResult = ({ planId }) => {
                                     </div>
                                 </div>
                                 {index < sharedPlace[date].length - 1 && (
-                                    <div className="arrow-down"></div> 
+                                    <div className="arrow-down"></div>
                                 )}
                             </React.Fragment>
                         ))}
@@ -73,7 +76,7 @@ export const PlanResult = ({ planId }) => {
             </div>
         </div>
     );
-    
+
 };
 
 export default PlanResult;
