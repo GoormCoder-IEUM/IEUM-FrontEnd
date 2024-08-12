@@ -1,5 +1,5 @@
 /* Modal Overlay */
-.modal-overlay {
+.result-modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -13,12 +13,11 @@
 }
 
 /* Modal Content */
-.modal-content {
+.result-modal-content {
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    max-width: 1024px;
+    width: 1024px;
     height: 90%;
     position: relative;
     overflow-y: hidden;
@@ -39,7 +38,7 @@
 /* Plan Result Container */
 .plan-result-container{
     padding: 10px;
-    width: 100%;
+    width: 98%;
     height: 100%;
     margin: 0 auto;
 }

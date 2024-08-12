@@ -49,8 +49,8 @@ export const PlanResultModal = ({ show, planId, onClose }) => {
     }
 
     return (
-        <div className="modal-overlay">
-            <div className="modal-content">
+        <div className="result-modal-overlay">
+            <div className="result-modal-content">
                 <button className="close-button" onClick={onClose}>&times;</button>
                 <div className="plan-result-container">
                     <div className="date-group-container for-modal">
