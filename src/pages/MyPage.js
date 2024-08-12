@@ -36,6 +36,16 @@ const MyPage = () => {
     const [invitations, setInvitations] = useState([]);
     const [weatherData, setWeatherData] = useState({});
     const [weatherVisible, setWeatherVisible] = useState({}); // 날씨 정보 표시 상태 관리 추가
+    const [showTooltip, setShowTooltip] = useState(false); // 안내 문구 추가
+
+    const handleMouseEnter = () => {
+        setShowTooltip(true);
+    };
+
+    const handleMouseLeave = () => {
+        setShowTooltip(false);
+    };
+
     const navigate = useNavigate();
 
     const weatherIcons = {
@@ -392,6 +402,20 @@ const MyPage = () => {
                 <div className="profile-item clickable" onClick={openEditModal}>회원 정보 수정</div>
                 <div className="profile-item clickable" onClick={openInvitationsModal}>받은 초대 조회</div>
                 <div className="profile-item clickable" onClick={openPasswordModal}>비밀번호 재설정</div>
+
+                <div className="finalize-notice">
+                    {showTooltip && (
+                        <div className="tooltip">
+                            일정에 포함된 멤버들의 이메일(Gmail)을 이용하여 구글캘린더에 일정을 추가해줍니다.
+                            <br/>
+                            일정 시작 전 알림이 메일로 전송됩니다.
+                        </div>
+                    )}
+                    일정 확정이란 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94" />
+                    </svg>
+                </div>
             </div>
             <div className="content-section">
                 <div className="tabs">
@@ -421,35 +445,35 @@ const MyPage = () => {
                                         <div>시작일: {new Date(schedule.startedAt).toLocaleDateString()}</div>
                                         <div>종료일: {new Date(schedule.endedAt).toLocaleDateString()}</div>
                                         <div>교통수단: {schedule.vehicle === "OWN_CAR" ? "자가용" : "대중교통"}</div>
-                                            {calculateDDay(schedule.startedAt).startsWith('D-') && parseInt(calculateDDay(schedule.startedAt).split('-')[1]) <= 5 && (
-                                                <button onClick={() => {
-                                                    toggleWeatherVisibility(schedule.destinationName);
-                                                    if (!weatherVisible[schedule.destinationName]) {
-                                                        fetchWeather(schedule.destinationName, schedule.startedAt, schedule.endedAt);
-                                                    }
-                                                }}>
-                                                    {weatherVisible[schedule.destinationName] ? "⛅ 날씨 정보 숨기기" : "⛅ 날씨 정보 조회"}
-                                                </button>
-                                            )}
-                                            {weatherVisible[schedule.destinationName] && weatherData[schedule.destinationName] && Object.keys(weatherData[schedule.destinationName]).length > 0 && (
-                                                <div className="weather-container">
-                                                    {Object.entries(weatherData[schedule.destinationName]).map(([date, weathers], index) => (
-                                                        <div key={index} className="weather-day">
-                                                            <div>{date}</div>
-                                                            {weathers.map((weather, i) => (
-                                                                <div key={i} className="weather-card">
-                                                                    <div className="weather-time">{new Date(weather.dateTime).getHours()}:00</div>
-                                                                    <div className="weather-icon">{getWeatherIcon(weather.weatherDescription)}</div>
-                                                                    <div className="weather-temperature">
-                                                                        <span className="high-temp">{weather.temperature}°C</span>
-                                                                    </div>
-                                                                    <div className="weather-humidity">💧{weather.humidity}%</div>
+                                        {calculateDDay(schedule.startedAt).startsWith('D-') && parseInt(calculateDDay(schedule.startedAt).split('-')[1]) <= 5 && (
+                                            <button onClick={() => {
+                                                toggleWeatherVisibility(schedule.destinationName);
+                                                if (!weatherVisible[schedule.destinationName]) {
+                                                    fetchWeather(schedule.destinationName, schedule.startedAt, schedule.endedAt);
+                                                }
+                                            }}>
+                                                {weatherVisible[schedule.destinationName] ? "⛅ 날씨 정보 숨기기" : "⛅ 날씨 정보 조회"}
+                                            </button>
+                                        )}
+                                        {weatherVisible[schedule.destinationName] && weatherData[schedule.destinationName] && Object.keys(weatherData[schedule.destinationName]).length > 0 && (
+                                            <div className="weather-container">
+                                                {Object.entries(weatherData[schedule.destinationName]).map(([date, weathers], index) => (
+                                                    <div key={index} className="weather-day">
+                                                        <div>{date}</div>
+                                                        {weathers.map((weather, i) => (
+                                                            <div key={i} className="weather-card">
+                                                                <div className="weather-time">{new Date(weather.dateTime).getHours()}:00</div>
+                                                                <div className="weather-icon">{getWeatherIcon(weather.weatherDescription)}</div>
+                                                                <div className="weather-temperature">
+                                                                    <span className="high-temp">{weather.temperature}°C</span>
                                                                 </div>
-                                                            ))}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
+                                                                <div className="weather-humidity">💧{weather.humidity}%</div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                         <div className="plan-wrap">
                                             <button onClick={() => handleEditPlan(schedule)}>✏️&nbsp;일정 수정하기</button>
                                             <button onClick={() => openInviteMemberModal(schedule)}>📭&nbsp;멤버 초대하기</button>
